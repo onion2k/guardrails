@@ -18,12 +18,14 @@ It is written for Claude first, and needs nothing from Claude to work.
     templates/           the project file (AGENTS.md), the files that point each
                          harness at it, and the pre-commit hook
     skills/              guardrails, feature, bug, gate-moved, commit
-    install.sh           puts the kit into a project
+    INSTALL.md           the installer: an agent follows it to put the kit in, or update it
     tests/run            the kit's own checks
 
 ## Putting it in a project
 
-    ./install.sh ~/projects/some-project
+Tell the agent working in the project, in any harness:
+
+    Follow https://github.com/onion2k/guardrails/blob/main/INSTALL.md to install the guardrails kit here.
 
 What it writes, and what it will not, is in [Installing](#installing).
 Then, in the project, run the `guardrails` skill: it reads the project,
@@ -90,34 +92,34 @@ Not settled from the docs:
   missing. The folders it gives agree with Cursor's and Codex's.
 - **Cursor reads both skill folders,** so it may list each skill twice.
   Cursor's docs do not say what it does with two of the same name.
-  `install.sh --harness` leaves out the folder a project does not need.
+  The install asks which harnesses a project uses, and leaves out a
+  folder it does not need.
 - **Codex has no import**, and its docs say nothing of reading
   `CLAUDE.md`. Neither matters here: it reads `AGENTS.md`, and is told in
   words to read `GUARDRAILS.md`.
 
 ## Installing
 
-    ./install.sh <project> [--harness claude,codex,gemini,cursor] [--yes]
-
-All four harnesses are the default. `--harness` leaves out what a project
-does not use: `codex` alone writes no `.claude/` and no `CLAUDE.md`.
-
-It writes two kinds of file, and treats them differently.
+There is no script to run: an agent installs the kit by following
+[INSTALL.md](INSTALL.md), so it works on any system with git, Windows
+included, and in any harness. It asks which harnesses the project uses,
+gets the kit at its newest tag, and writes two kinds of file, which it
+treats differently.
 
 **The kit's own,** which a newer kit replaces:
 
     guardrails/GUARDRAILS.md
     guardrails/checks/*.md
-    guardrails/VERSION
-    guardrails/MANIFEST       what was written, so an edit can be told from an update
+    guardrails/INSTALLED.md   the version, the harnesses, and which skill folders are the kit's
     .agents/skills/<skill>/   for Codex, Gemini CLI and Cursor
     .claude/skills/<skill>/   for Claude Code
 
 These are not edited in the project. A change to a rule is made in the kit
-and installed again; a rule the project keeps beyond the kit's goes in its
-own `AGENTS.md`. Installed again, a kit that has changed shows its diff and
-writes nothing until `--yes` is given, and a file edited by hand since it
-was installed stops the update altogether, named, so that nothing is lost.
+and released; a rule the project keeps beyond the kit's goes in its own
+`AGENTS.md`. To update, tell the agent to follow `INSTALL.md` again, or run
+the `guardrails` skill, which does so first. A kit file edited by hand
+since it was installed stops the update, named, so that nothing is lost,
+and a newer kit is shown as a diff and taken in only on a yes.
 
 **The project's own,** written once from `templates/`, where there is
 none, and never over one that is there:
@@ -126,13 +128,23 @@ none, and never over one that is there:
     CLAUDE.md, GEMINI.md      one line each: @AGENTS.md
     .githooks/pre-commit      refuses every commit until its quick check is named
 
-Where one is there already, the installer prints what to add to it. A
-skill folder the project already has, of the same name as one of the
-kit's, is the project's own and is left alone, and the installer says so.
+Where one is there already, the agent says what to add to it. A skill
+folder the project already has, of the same name as one of the kit's, is
+the project's own and is left alone.
 
 The hook is not running until the project's quick check is named in it and
 git is pointed at `.githooks`. The `guardrails` skill does both, and asks
 first.
+
+### Releases
+
+Each release is a git tag, `v0.1.0` and on. `INSTALL.md` installs the
+newest, and an update compares the project's files with the kit at the tag
+it has, which is how a hand edit is told from the kit's own.
+
+| Tag      | What changed                                                                   |
+| -------- | ------------------------------------------------------------------------------ |
+| `v0.1.0` | The first: the rules, eleven checks, five skills, installed by an agent alone. |
 
 ## Left out on purpose
 

@@ -10,6 +10,6 @@ test_format_kit_markdown_is_as_prettier_writes_it() {
   local bin; bin="$(prettier_here)"
   [[ -n "$bin" ]] || { echo "no prettier here; set PRETTIER to one"; return 77; }
   local out
-  out="$(cd "$KIT" && "$bin" --no-config --check GUARDRAILS.md README.md checks/*.md skills/*/SKILL.md templates/*.md 2>&1)" \
+  out="$(cd "$KIT" && "$bin" --no-config --check GUARDRAILS.md INSTALL.md README.md checks/*.md skills/*/SKILL.md templates/*.md 2>&1)" \
     || { echo "$out" | grep warn; return 1; }
 }

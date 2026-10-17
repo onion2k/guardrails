@@ -25,9 +25,11 @@ every machine has, so that the kit asks nothing of whoever checks it.
 - `templates/` is what a project gets once and then owns: its project
   file, the one-line files that point each harness at it, and the hook.
 - `skills/` is the skills, to the Agent Skills specification, copied into
-  each harness's folder by the installer.
-- `install.sh` puts the kit into a project. `tests/` holds the kit to what
-  is said here.
+  each harness's folder by the install.
+- `INSTALL.md` is the installer: an agent follows it to put the kit into
+  a project and to take a newer one in. There is no script, so nothing
+  but git is asked of the machine a project is on. `tests/` holds the kit
+  to what is said here.
 - `PLAN.md` is the plan the kit is being built to, ticked as it goes.
 
 ## Model features
@@ -58,6 +60,8 @@ For anything new, check what it does:
 - **a project that is not a game:** a package, a site, a service, a CLI:
   does the check say what stands in for it
 - **a path with a space in it**, and a project that is not a git repo
+- **Windows:** nothing a project runs or an install asks for may need more
+  than git; no shell script, no tool only one system has
 
 ## Gates
 
@@ -69,8 +73,9 @@ files to their shape, exactly, and have no baseline.
 The definition of done's nine points, for the kit: a test in `tests/` for
 each new rule a file must keep, seen failing first and mutation-checked;
 every file touched read through for what it says and in the house voice;
-`tests/run` green. A change to how a project installs the kit is tried on
-a throwaway project made under `mktemp -d`.
+`tests/run` green. A change to `INSTALL.md` is tried by an agent following
+it in a throwaway clone of a real project, and the clone's diff read
+against what the file says should have happened.
 
 ## What is not held
 
@@ -87,8 +92,9 @@ a throwaway project made under `mktemp -d`.
 
 ## Who uses it
 
-Any project that installs it, by copy: nothing pins it. A project says
-which version it has in `guardrails/VERSION`.
+Any project that installs it, by copy. A project says which tag it has in
+`guardrails/INSTALLED.md`, and an update compares against the kit at that
+tag, so a released tag is never moved or deleted.
 
 ## Commits
 

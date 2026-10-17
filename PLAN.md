@@ -203,3 +203,100 @@ Found in the projects, and theirs to look into, not the kit's:
 - **sysmod has no formatter, no lint and no hook,** and its build warns of
   two chunks over 500 kB with nothing failing on it.
 
+
+---
+
+# Plan 2: drop the installer
+
+Written 2026-10-17, on `e9f257c`. Nothing is built until the user says go.
+
+## Aim
+
+`install.sh` is bash, and Windows has no bash outside Git Bash or WSL. The
+user chose to drop it, and let the agent put the kit in. Every harness can
+read and copy files on every system, so the kit then asks nothing of the
+machine but git.
+
+The installer's guarantees are kept, as instructions an agent follows:
+never write over a project's own file, show a newer kit before taking it
+in, and never write over a hand edit. What changes is how each is proved:
+the installer's tests held them in code, and nothing can hold an agent to
+them in code. The trial does that instead.
+
+## Design
+
+- **`INSTALL.md` at the kit's root is the installer.** It is written for
+  an agent, and a user starts it by telling their agent: "follow
+  https://github.com/onion2k/guardrails/blob/main/INSTALL.md". That has
+  to be a file, not a skill, because before the kit is in, the project has
+  no skills to run.
+- **The agent gets the kit with git:** `git clone --depth 1 --branch
+  <tag>` into a temporary folder, then deletes it afterwards. Git is the
+  one tool the kit already assumes, because of the hook.
+- **Releases are git tags** (`v0.1.0` and up), and `guardrails/VERSION`
+  says which tag a project has. That stands in for the manifest, and needs
+  no checksum tool:
+  - **hand edits:** the project's kit files are compared with the kit at
+    the installed tag. Any difference is a hand edit, and stops the
+    update, named.
+  - **the update:** the kit at the installed tag is compared with the kit
+    at the new tag. The agent shows that diff, and takes it in only on the
+    user's yes.
+- **The layout does not change:** `guardrails/`, `.agents/skills/`,
+  `.claude/skills/`, and the templates written once, where none is there.
+  `guardrails/MANIFEST` goes.
+- **Updating is phase 0 of the `guardrails` skill,** which reads
+  `guardrails/VERSION` and follows `INSTALL.md`'s update steps.
+- **The kit's own tests stay bash.** Only whoever changes the kit runs
+  them; a project that installs it never does.
+
+## Out of scope
+
+- A Windows run of anything: there is no Windows machine here. What
+  stands in is that nothing a project runs needs more than git.
+- Moving the two trial clones over. They are throwaway.
+
+## Parts
+
+- [x] **1. `INSTALL.md`.** Install and update, step by step, for an
+      agent, covering everything `install.sh` did: the harness choice,
+      folders the project already has, the advice it printed (the
+      `@AGENTS.md` line, the missing headings, the formatter, the hook),
+      and the refusals, each by name. *Check:* a test holds the file to
+      naming every path the kit writes, every refusal and every harness,
+      and to naming no harness-only tool. Each part of the test is seen
+      failing first.
+- [ ] **2. Tag `v0.1.0`.** It points at the first commit that has
+      `INSTALL.md` in it. *Check:* `git ls-remote --tags` shows it.
+      Pushing the tag waits for the user to say so.
+- [x] **3. Take the installer out.** Remove `install.sh`,
+      `tests/test_install.sh` and the manifest, and rewrite the README's
+      _Installing_ section, `AGENTS.md`'s layout and edge cases, and the
+      skill's phase 5 to match. Add phase 0 (updating) to the skill.
+      *Check:* `tests/run` is green, and nothing in the kit names
+      `install.sh` or `MANIFEST`, which a test holds.
+- [ ] **4. Trial, three ways,** each by an agent on the cheaper model,
+      each in a fresh throwaway clone, each following `INSTALL.md` from
+      the local kit:
+      - a fresh install into sysmod
+      - an install into ooergolf, whose own files and skills must come
+        through untouched
+      - an update from a tag a version older, with a hand edit put into
+        one installed check on purpose
+      *Check:* each clone's `git status` and diff, read here, against
+      what `INSTALL.md` says should happen: nothing of the project's
+      written over, the edit named, the diff shown before anything is
+      written.
+
+## Decided, and changed while building
+
+- **Tags:** plain semver, `v0.1.0` first. Pushing a tag waits for the
+  user.
+- **The tag comes after part 3,** so that `v0.1.0` is a kit with no
+  `install.sh` in it. It is still the first commit with `INSTALL.md` in
+  it.
+- **`guardrails/VERSION` became `guardrails/INSTALLED.md`.** Without the
+  manifest, nothing told a skill folder the kit wrote from one of the
+  project's own with the same name. The file records the tag, the
+  harnesses, and which skill folders are the kit's and which the
+  project's. The kit keeps no `VERSION` file: the tag says it once.

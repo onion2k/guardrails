@@ -10,6 +10,15 @@ Take a project from whatever it has to the checks in
 `guardrails/GUARDRAILS.md`: read them first. Nothing is added to the
 project until the user has agreed the order, in phase 3.
 
+## 0. Is the kit current?
+
+`guardrails/INSTALLED.md` says which version of the kit the project has.
+Look up the newest, as the kit's `INSTALL.md` says under _Getting the
+kit_. Where it is newer, say so, and offer to update first: the update is
+done by following `INSTALL.md` at the newer version, under _Updating_,
+with its diff shown and nothing written without the user's yes. Where the
+user would rather not, carry on with the kit as it is.
+
 ## 1. Read what is there
 
 - The project file, `AGENTS.md`, and any other instruction file beside it
@@ -23,7 +32,7 @@ project until the user has agreed the order, in phase 3.
 ## 2. The project file
 
 `AGENTS.md` has the headings `GUARDRAILS.md` lists under _The project's
-file_. Where the installer wrote the template, every heading is in square
+file_. Where the install wrote the template, every heading is in square
 brackets still. Write each from what the code does, not from what it is
 meant to do, and say in the file that it was written, on what date, and
 from which commit.
@@ -112,7 +121,7 @@ the report says so.
 
 The quick check runs before every commit.
 
-- **The kit's hook:** where the project had none, the installer left
+- **The kit's hook:** where the project had none, the install left
   `.githooks/pre-commit`, which refuses every commit until its
   `QUICK_CHECK` is set. Set it to the project's quick check.
 - **The project's own hook:** where it had one, it is left, and read: it

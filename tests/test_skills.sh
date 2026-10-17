@@ -7,6 +7,10 @@ SKILLS=(bug commit feature gate-moved guardrails)
 # rule that uses one works in that harness and reads as noise in the rest.
 HARNESS_WORDS='EnterPlanMode|ExitPlanMode|AskUserQuestion|TodoWrite|TaskCreate|SendMessage|opusplan|\bopus\b|\bsonnet\b|\bhaiku\b|Claude|Anthropic|Codex|OpenAI|Gemini|Cursor|Copilot|\.claude/|CLAUDE\.md'
 
+# A harness's own tools and the models: wrong even in INSTALL.md, which has
+# to name the harnesses themselves to say where each looks.
+TOOL_WORDS='EnterPlanMode|ExitPlanMode|AskUserQuestion|TodoWrite|TaskCreate|SendMessage|opusplan|\bopus\b|\bsonnet\b|\bhaiku\b'
+
 # What a project names in its own file, and a skill must read from there.
 PROJECT_WORDS='npm |npx |yarn |pnpm |vitest|playwright|jest|pytest|cargo |\btest/|\bsmoke/|\bsrc/|\bscripts/|seeds 1-'
 
@@ -47,6 +51,12 @@ test_skills_and_rules_name_no_harness() {
   local found
   found="$(grep -nE "$HARNESS_WORDS" "$KIT"/skills/*/SKILL.md "$KIT/GUARDRAILS.md" "$KIT"/checks/*.md 2>/dev/null)"
   [[ -z "$found" ]] || { echo "names a harness, a vendor or a model:"; sed "s|$KIT/||; s/^/  /" <<<"$found"; return 1; }
+}
+
+test_install_doc_names_no_harness_tool() {
+  local found
+  found="$(grep -nE "$TOOL_WORDS" "$KIT/INSTALL.md" 2>/dev/null)"
+  [[ -z "$found" ]] || { echo "INSTALL.md names a harness's own tool or a model:"; sed "s|$KIT/||; s/^/  /" <<<"$found"; return 1; }
 }
 
 test_skills_name_no_project_command_or_path() {
