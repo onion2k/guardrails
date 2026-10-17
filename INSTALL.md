@@ -43,7 +43,16 @@ This holds for an update as much as for an install.
    On an update, the user is asked whether the harnesses are still the
    ones the record names.
 
-4. **How a change lands,** the two questions at the end of
+4. **Dependencies,** the three questions under _The questions a project
+   answers_ in `guardrails/checks/dependencies.md`, asked as they are
+   written there, each with its recommendation: the **audit threshold**,
+   the **allowed licences**, and **how updates arrive**. The answers go
+   into the project file's _Gates_ and _Commands_. On an update, they are
+   read from the newer kit's copy of that file, and asked only where the
+   project file has no answers yet; a bracketed default is no answer.
+   Since an update never writes the project file, the answers are given
+   to the user as the lines to add.
+5. **How a change lands,** the two questions at the end of
    `guardrails/GUARDRAILS.md`'s _Landing a change_, asked as they are
    written there, each with its recommendation:
    - the **merge style**: a merge commit, squash, or rebase
@@ -107,11 +116,12 @@ Where the project has no `guardrails/` folder.
      `.githooks/commit-msg`, from `templates/commit-msg`, each made
      executable where the system has such a thing
 
-   Where the install writes `AGENTS.md`, it fills in _How a change lands_,
-   each bracketed default replaced by the answer in plain words, with the
-   answers to the questions in _Before anything_: the merge style,
-   and what an agent may do without asking, with the grant's who and date
-   where there is one.
+   Where the install writes `AGENTS.md`, it fills in the answers to the
+   questions in _Before anything_, each bracketed default replaced by the
+   answer in plain words: under _Gates_, the audit threshold and the
+   allowed licences; under _Commands_, how updates arrive; and under _How
+   a change lands_, the merge style and what an agent may do without
+   asking, with the grant's who and date where there is one.
 
    These are the project's from then on, and an update never touches
    them.

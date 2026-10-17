@@ -66,9 +66,17 @@ holds it: copied into the file, it is soon wrong.
 - **No tight coupling.** A module takes what it needs as arguments or
   options. It does not import state, and lower modules do not import
   content. One place wires everything together. What a tool can read of
-  this in the imports is held by [checks/structure.md](checks/structure.md). Machinery two projects need
+  this in the imports is held by
+  [checks/structure.md](checks/structure.md). Machinery two projects need
   becomes a package of its own, taken in with a version bump, and one
   module is a project's side of it.
+- **A dependency is taken in on purpose.** Before it is added, someone
+  says what it is for, what it costs (download, start-up, install), who
+  keeps it up and how lately, its licence, and why it is not a few lines
+  written here. It goes in a commit of its own, saying so, and a pin is
+  moved in a commit that moves the pin and nothing else. What can be held
+  of this, and of what is already taken in, is held by
+  [checks/dependencies.md](checks/dependencies.md).
 - **Each thing is said once.** A colour, a size, a limit or a sum lives in
   one place and the rest read it, and a behaviour has one implementation.
   A generated file is built again, never edited. What has to be said twice
@@ -167,6 +175,7 @@ it has been seen to fail what it is for.
 | [formatting](checks/formatting.md)             | one formatter deciding every file it should                         |
 | [lint](checks/lint.md)                         | mistakes the compiler lets through, and the rules a linter can hold |
 | [structure](checks/structure.md)               | what may import what                                                |
+| [dependencies](checks/dependencies.md)         | installs exact, advisories seen, licences allowed, nothing unused   |
 | [unit](checks/unit.md)                         | the thing's working parts, headless and seeded                      |
 | [test API](checks/test-api.md)                 | a scene set, time stepped, state read back; end to end              |
 | [invariants](checks/invariants.md)             | what must always be true, however it got there                      |

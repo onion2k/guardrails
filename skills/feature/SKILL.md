@@ -62,6 +62,9 @@ Write a short spec and show it. Keep it under a screen.
   anything with more than one reasonable answer. A recommendation for
   each, and what each would cost, from the measurements. A matter of taste
   is shown, as a mock or a before and after, not described.
+  A new dependency is always a decision here, with the questions of
+  `GUARDRAILS.md`'s rule on dependencies answered: never found in the
+  diff.
 - **Performance risk:** what could cost load time, download, or the cost
   of a frame or a request, against the project's budgets, and how it will
   be measured. For a tool, what it adds to the full check.

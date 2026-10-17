@@ -14,7 +14,8 @@ project until the user has agreed the order, in phase 3.
 
 `guardrails/INSTALLED.md` says which version of the kit the project has.
 Look up the newest, as the kit's `INSTALL.md` says under _Getting the
-kit_. Where it is newer, say so, and offer to update first: the update is
+kit_, from the same place the project's kit came from: where the user
+named a local copy, that copy, which may be ahead of the published kit. Where it is newer, say so, and offer to update first: the update is
 done by following `INSTALL.md` at the newer version, under _Updating_,
 with its diff shown and nothing written without the user's yes. Where the
 user would rather not, carry on with the kit as it is.
@@ -100,11 +101,19 @@ rest.
 
 The order is usually the table's. The quick check and its hook come first,
 with the formatter and lint in it, since every later check lands through
-it; then the structure rules, unit tests and the seeded source, the test
+it; then the structure rules, the dependencies, unit tests and the seeded
+source, the test
 API, the invariants, the fuzzer, and the rest. Verification comes once
 there is a full check to run, and somewhere other than this machine to run
 it. A project with a known fault takes the check that would have caught it
 early.
+
+Where the project pins packages of its own by a git tag, say for each
+which tag it pins, the package's newest, and the other projects that pin
+it and at what, so that drift between them is seen. Read the other
+projects' manifests where they can be reached, not only the package's
+own list of who uses it; where the two disagree, say so, as a finding in
+the package.
 
 Write the order as a plan in a file the project file points to: one box a
 check, the check that proves each beside it. Then stop, and wait for the

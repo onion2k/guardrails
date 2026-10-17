@@ -23,6 +23,8 @@ file a tool holds it in.
     [each gate]            [what it holds the project to]
     [format]               the formatter, writing: by hand, never by the hook
     [CI]                   [where the full check runs besides this machine, and on what]
+    [audit]                the dependencies' known advisories, at the threshold under Gates
+    [updates]              [how updates arrive: a bot for security updates only, versions by hand monthly]
 
 [Which command writes each baseline again. Only for a change meant to move
 it, and the commit says why.]
@@ -67,6 +69,11 @@ For anything new, check what it does:
 | Figure   | Budget   | Baseline kept in | Tolerance, and why it is that wide | Held by  |
 | -------- | -------- | ---------------- | ---------------------------------- | -------- |
 | [figure] | [budget] | [file]           | [the measured wobble, and where]   | [script] |
+
+- **Audit threshold:** [high and critical fail; moderate is reported; an
+  exception is written with why, and looked at again within 90 days]
+- **Allowed licences:** [MIT, BSD-2-Clause, BSD-3-Clause, ISC, Apache-2.0,
+  0BSD, Unlicense; anything else asked about by name]
 
 ## Done, here
 

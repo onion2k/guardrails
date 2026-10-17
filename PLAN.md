@@ -708,3 +708,194 @@ Part 7 was done on the user's yes, 2026-10-17: `~/.claude/CLAUDE.md` went
 from 241 lines to 41, the old kept beside it as
 `~/.claude/CLAUDE.md.before-guardrails`.
 
+
+---
+
+# Plan 5: dependencies
+
+Written 2026-10-17, on `f822e64` (`v0.3.0`). Nothing is built until the
+user says go.
+
+## Aim
+
+What a project takes in from others is code it ships and did not write,
+and the kit holds none of it. Today, across the user's projects:
+lockfiles are committed; the user's own packages are pinned by git tag
+(`github:onion2k/artshape-render#v0.45.0` in ooergolf, `#v0.23.0` in
+pushminer); and nothing audits, checks licences, or says when a
+dependency may be added. This plan gives dependencies a check of their
+own and a rule in `GUARDRAILS.md`, so each project is surveyed and taken
+up it like the rest.
+
+Security beyond dependencies (secrets in the tree, headers, input
+handling) is a plan of its own, after this one.
+
+## The rule
+
+A new bullet in `GUARDRAILS.md`'s Structure, beside "Machinery two
+projects need becomes a package", pointing at `checks/dependencies.md`:
+
+- **A dependency is taken in on purpose.** Before it is added, someone
+  says what it is for, what it costs (download, start-up, install), who
+  keeps it up and how lately, its licence, and why it is not a few lines
+  written here. It goes in a commit of its own, saying so. A pin is moved
+  in a commit that moves the pin and nothing else, as the rules already
+  say for packages.
+
+## The check: `checks/dependencies.md`
+
+It has the four sections every check has.
+
+- **What it holds:**
+  - **Installs are exact.** The lockfile is committed. CI and the gates
+    install from it and fail if it would change (`npm ci`,
+    `pnpm install --frozen-lockfile`, `uv sync --locked`,
+    `cargo build --locked`, `go mod verify`). A dependency pinned to a
+    git ref is pinned to a tag or a commit, never a branch.
+  - **Known vulnerabilities are seen.** An audit of the installed tree
+    runs in CI and on a schedule, not in the hook: it needs the network,
+    and its answer changes when nothing here has. It fails at the
+    project's threshold. A finding the project accepts is written down
+    with why, and a date to look again, and is listed by the check until
+    then.
+  - **Licences are allowed.** Every dependency's licence is on the
+    project's allowed list, read from the installed tree. One not on it
+    fails, by name.
+  - **Nothing is unused.** A dependency no code imports is reported, and
+    removed or said why it stays.
+  - **Updates are made, not drifted into.** How the project keeps current
+    is in its project file: by hand on a cadence, or by a bot whose PRs
+    are held to the same checks. Each update lands as its own commit.
+- **Its smallest form:** TypeScript first, as the others are:
+  - `npm ci` in CI
+  - `npm audit --audit-level=<threshold>` in a scheduled CI job
+  - a licence check over `node_modules`
+  - knip for what is unused
+
+  Each tool is named only after it is looked up (part 1).
+- **Seen failing:** a lockfile edited by hand fails the exact install. A
+  dependency with a known advisory, pinned on a throwaway branch, fails
+  the audit. A dependency with a licence off the list fails the licence
+  check. An import removed leaves its dependency reported as unused.
+- **Where it cannot apply:**
+  - **Python:** uv or pip-tools for locking, pip-audit.
+  - **Rust:** `--locked`, cargo-audit, cargo-deny for licences.
+  - **Go:** `go mod verify`, govulncheck.
+  - **A git-ref dependency** has no advisory database. Its tag is its
+    pin, and the projects that pin it are listed in the package's own
+    _Who uses it_, so drift between them is seen there.
+  - **A project with no dependencies** says so.
+
+## What else changes
+
+- **`GUARDRAILS.md`:** the rule above. A row in the table, after
+  structure and before unit, since an exact install is what every later
+  check stands on.
+- **The project file's _Commands_ in the template:** lines for the audit
+  and how updates are made, and the allowed licences under _Gates_, where
+  the thresholds live.
+- **The `guardrails` skill's survey order:** dependencies after
+  structure. A project whose packages pin each other by git tag (the
+  user's own) is surveyed for how far apart its consumers are.
+- **The `feature` skill:** a new dependency is a decision in the spec,
+  with the rule's questions answered there, not found in the diff.
+
+## Out of scope
+
+- Running an audit across the user's projects or fixing what it finds.
+  The survey reports it, and each project fixes its own, one check at a
+  time.
+- Bringing the user's games level on `artshape-render`. That is each
+  game's update, on its own commit, when the user asks.
+- Generating an SBOM, and signing or provenance of packages: the security
+  plan's.
+
+## Parts
+
+- [x] **1. Look up the tools,** from their current docs, each noted with
+      its source and date, as in plan 3: npm audit's levels, the
+      `pnpm audit` and `uv` and `cargo --locked` flags, a maintained
+      licence checker for npm, knip, pip-audit, cargo-audit and cargo-deny,
+      govulncheck, and Dependabot's and Renovate's config for "security
+      updates only". *Check:* a source for each name in the commit
+      message.
+- [x] **2. Tests first.** These cover three things:
+      - The Structure rule points at `checks/dependencies.md`.
+      - The table has `dependencies` after `structure`.
+      - The `feature` skill names a new dependency as a decision in the
+        spec.
+
+      The existing tests already hold the check file's sections and the
+      template's headings. *Check:* each is seen failing first.
+- [x] **3. The check file, the rule, the template, the skills.** *Check:*
+      tests green, every new test mutation-checked.
+- [x] **4. Trial,** by agents on the cheaper model, in throwaway clones:
+      - the `guardrails` skill's survey in ooergolf, which should report
+        its two git-tag pins, their tags, and how far behind the
+        renderer's newest they are. It should also run the audit once,
+        read only, and report it.
+      - the same in sysmod, with pnpm.
+      - an update from `v0.3.0` to the new tag in a third clone.
+
+      *Check:* each clone read here; what the agents guessed is fixed and
+      recorded.
+- [x] **5. Release `v0.4.0`.** The commit and the tag, and the pushes,
+      each only on the user's word.
+
+## Decided
+
+All four recommendations, by the user, 2026-10-17.
+
+## Open for the user (as written; answered above)
+
+- **Audit threshold.** The recommendation is that _high_ and _critical_
+  fail, _moderate_ is reported, and a written exception lasts at most 90
+  days before it is looked at again.
+- **Allowed licences.** The recommendation is MIT, BSD-2 and BSD-3,
+  ISC, Apache-2.0, 0BSD and the Unlicense allowed. Anything else,
+  copyleft included, is asked about by name.
+- **How updates arrive.** The recommendation is a bot for security
+  updates only (Dependabot alerts with security PRs), and version updates
+  by hand, monthly, a commit each. The alternative is a bot for all
+  updates, grouped weekly.
+- **The install answer.** Should `INSTALL.md` ask the three questions
+  above, as it now asks the merge style? The recommendation is yes, the
+  answers written into _Gates_ and _Commands_.
+
+## What plan 5's trial found
+
+Run 2026-10-17 by three agents in throwaway clones, against a throwaway
+kit with the real `v0.1.0` to `v0.3.0` and this work tagged `v0.4.0`;
+each clone checked here afterwards.
+
+- **The update held.** A sysmod clone on `v0.3.0` was updated to
+  `v0.4.0`. The three new questions were asked, the diff showed
+  `checks/dependencies.md` added, and the answers were given as lines to
+  add to the project's own `AGENTS.md`. The clone matched `v0.4.0` byte
+  for byte.
+- **The survey found real findings, each confirmed here.**
+  - sysmod: `pnpm audit --audit-level high` reports 12 advisories, 2 high
+    and 4 critical, all through its dev dependencies vitest and vite.
+    There is no audit, no CI and no update policy.
+  - ooergolf: `npm audit` reports 2 critical and 1 high, all dev. Its
+    lockfile resolves `artshape-physics` and `artshape-render` over
+    `git+ssh` (lines 1609, 1614). Both are at their newest tags.
+  - artshape-physics: its _Who uses it_ table is out of date. It says
+    pushminer pins `v0.1.0`, and pushminer pins `v0.8.0`.
+
+  These are each project's own to fix, and are put to the user.
+- **The check was wrong in two places, now fixed.** Its licence command
+  failed on any project's own private root (`--excludePrivatePackages`),
+  and at a pnpm workspace's root, which has only dev dependencies (run per
+  package). Its claim that pnpm's audit exits 0 on a registry error held
+  for current pnpm's docs, but not for pnpm 8, which exits 1; the job now
+  reads `--json` and does not trust the exit code alone.
+- **Ruled while fixing:** the licence check is for what ships, and dev
+  licences are reported; the audit covers dev dependencies too, at the
+  same threshold unless the project says otherwise; a silent "nothing
+  unused" is trusted only once seen to find something; a git-ref pin's
+  _Who uses it_ is checked against the pinning projects' manifests; a
+  local kit copy ahead of the published one is the one updated from; a
+  bracketed default is no answer; and on an update the dependency
+  answers come from the newer kit and are given as lines to add.
+
