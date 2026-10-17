@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+# The kit's own checks. The kit is instructions, not code, so what can go
+# wrong is a file missing a part a reader relies on, a skill a harness will
+# not load, a word only one harness understands, or an installer that writes
+# over a project's own file. Each test here holds one of those.
+#
+#   tests/run            every test
+#   tests/run checks     only the tests whose name has "checks" in it
+#
+# Plain bash and the tools every machine has, so the kit needs nothing
+# installed to be checked.
+set -uo pipefail
+
+KIT="$(cd "$(dirname "$0")/.." && pwd)"
+export KIT
+FILTER="${1:-}"
+
+# Every test's throwaway projects go in one folder for the run, cleared at
+# the end, so a run leaves nothing behind.
+TMPDIR="$(mktemp -d)"
+export TMPDIR
+trap 'rm -rf "$TMPDIR"' EXIT
+
+passed=0
+failed=0
+skipped=0
+ran=0
+
+# A test is a function named test_*. It fails by printing why and returning
+# non-zero, and passes silently. One that cannot run on this machine returns
+# 77 and says why: it is counted as skipped, never as passed.
+for file in "$KIT"/tests/test_*.sh; do
+  # shellcheck source=/dev/null
+  source "$file"
+done
+
+for name in $(declare -F | awk '{print $3}' | grep '^test_' | sort); do
+  [[ -n "$FILTER" && "$name" != *"$FILTER"* ]] && continue
+  ran=$((ran + 1))
+  out="$("$name" 2>&1)"
+  status=$?
+  if ((status == 0)); then
+    passed=$((passed + 1))
+    printf 'ok    %s\n' "$name"
+  elif ((status == 77)); then
+    skipped=$((skipped + 1))
+    printf 'skip  %s: %s\n' "$name" "$out"
+  else
+    failed=$((failed + 1))
+    printf 'FAIL  %s\n' "$name"
+    printf '%s\n' "$out" | sed 's/^/      /'
+  fi
+done
+
+# A run that reached nothing, or skipped all it reached, has checked
+# nothing, and says so.
+if ((ran == skipped)); then
+  echo "no tests ran${FILTER:+ matching \"$FILTER\"}"
+  exit 1
+fi
+echo "$passed passed, $failed failed$( ((skipped)) && echo ", $skipped skipped")"
+((failed == 0))

@@ -1,0 +1,15 @@
+#!/bin/sh
+# Everything quick before a commit: formatting, types, lint and the unit
+# tests. The gates take longer, and are the full check's.
+#
+# Until the project's quick check is named below this refuses every commit,
+# because a hook that checks nothing passes them all in silence. Skip it in
+# an emergency with `git commit --no-verify`, and say so.
+
+QUICK_CHECK=''
+
+if [ -z "$QUICK_CHECK" ]; then
+  echo "pre-commit: no quick check named; set QUICK_CHECK in .githooks/pre-commit" >&2
+  exit 1
+fi
+exec sh -c "$QUICK_CHECK"
