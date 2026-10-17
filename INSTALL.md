@@ -19,6 +19,8 @@ stops and says so:
 
 ## Before anything
 
+This holds for an update as much as for an install.
+
 1. **The project:** the folder the user named, or the one the agent is
    working in. It must be a git repo; see _No git_ under _Refusals_.
 2. **The work tree is clean,** or what is not clean is said, so that what
@@ -35,8 +37,11 @@ stops and says so:
    | Gemini CLI  | `.agents/skills/` | `GEMINI.md`           |
    | Cursor      | `.agents/skills/` | none                  |
 
-   Cursor reads `.claude/skills/` as well, so with both it may list each
-   skill twice. That is said, and left to the user.
+   The skills folders written are every folder the chosen harnesses read,
+   so all four means both. Cursor reads `.claude/skills/` as well, so with
+   both it may list each skill twice. That is said, and left to the user.
+   On an update, the user is asked whether the harnesses are still the
+   ones the record names.
 
 ## Getting the kit
 
@@ -45,14 +50,20 @@ highest version among
 
     git ls-remote --tags https://github.com/onion2k/guardrails.git
 
-and a copy of it is made in a temporary folder, outside the project:
+compared as versions, number by number, not as text; a line ending in
+`^{}` is the same tag again, and is passed over. A copy of the kit at a
+tag is made in a temporary folder, outside the project:
 
     git clone --depth 1 --branch <tag> https://github.com/onion2k/guardrails.git <temporary folder>
 
-Where the user names a local copy of the kit instead, that copy is used,
-at the tag they name, or as it stands if they name none; the version
-recorded is then the tag, or the commit's hash. The temporary folder is
-deleted at the end, whatever happened.
+Where the user names a local copy of the kit instead, that copy is used
+the same way, without `--depth`, which git ignores for a local path. It
+is used at the tag the user names, or at its newest; where it has no tags,
+at its commit, and the version recorded is then the commit's hash, got
+again later with `git checkout <hash>` in a fresh clone.
+
+The temporary folder is kept until the work is done and checked, and then
+deleted, whatever happened, a refusal included.
 
 ## Installing
 
@@ -69,6 +80,12 @@ Where the project has no `guardrails/` folder.
      folder in, every file, byte for byte;
    - where it has one, it is the project's own, and is left exactly as it
      is. Say so.
+
+   Each skills folder is decided by itself. A project with its own `bug`
+   in `.claude/skills/` and none in `.agents/skills/` gets the kit's in
+   the second, and keeps its own in the first, so two harnesses run two
+   different skills of one name. That is said to the user.
+
 3. **The project file and its pointers,** each only where the project has
    none:
    - `AGENTS.md`, from `templates/AGENTS.md`
@@ -96,11 +113,26 @@ Where the project has no `guardrails/` folder.
 
        - .claude/skills/feature
 
+   The first list is every skill folder the kit wrote. The second is every
+   folder the kit would have written and did not, because the project had
+   one of that name, and nothing else; where there is none, it is the one
+   line `- none`. The harnesses are named as in the table, in lower case.
    It is the only file the agent writes in `guardrails/` itself, and it
    is how an update tells the kit's folders from the project's.
 
-5. **What is left for the project,** said to the user, each only where it
-   applies:
+5. **Check the copy.** Before the temporary folder goes, compare every
+   file written with the kit's, byte for byte, and every template written
+   with its template. A difference is put right and said; a copy that was
+   not checked is said to be unchecked.
+
+6. **What is left for the project,** said to the user in the report, in
+   this order, each only where it applies:
+   - **A pointer file of its own,** first of all. Where `CLAUDE.md` or
+     `GEMINI.md` was there already and does not bring in `@AGENTS.md`,
+     that harness never sees the kit. The line to add at its top is
+     `@AGENTS.md`. Where that file holds the project's real instructions,
+     the `AGENTS.md` just written from the template is still to be filled
+     in, and the `guardrails` skill does so, from the code and that file.
    - **A project file of its own.** Where `AGENTS.md` was there already
      and does not name the rules, the line to add near its top is:
 
@@ -109,52 +141,59 @@ Where the project has no `guardrails/` folder.
      and each heading of `templates/AGENTS.md` it lacks is listed: the
      skills look for them by name.
 
-   - **A pointer file of its own.** Where `CLAUDE.md` or `GEMINI.md` was
-     there already and does not bring in `@AGENTS.md`, that harness never
-     sees the kit. The line to add at its top is `@AGENTS.md`. This is
-     said first, as the one change without which nothing else here reaches
-     that harness.
    - **A formatter.** Where the project has one (a prettier, biome or
-     dprint config), it is told to leave `guardrails/` and the kit's skill
-     folders alone. The kit's files are formatted as prettier formats them
-     by default; a formatter that writes over them turns the next update
-     into a hand edit.
-   - **The hook.** A hook the project had already is left, and should run
-     its quick check. The kit's own refuses every commit until its
-     `QUICK_CHECK` is named, and runs only once git is pointed at its
-     folder with `git config core.hooksPath .githooks`. Both are the
-     `guardrails` skill's to do, and it asks first.
-6. **Report:** every file written, every file left as the project's,
-   and that nothing is committed. The next step is the `guardrails` skill,
-   run in the project.
+     dprint config file at its root, or a `prettier` key in its
+     `package.json`), the user is told to have it leave `guardrails/` and
+     each skill folder the record lists as the kit's alone, by its ignore
+     file, and given those paths, one a line. The agent does not
+     edit the ignore file itself. The kit's files are formatted as
+     prettier formats them by default; a formatter that writes over them
+     turns the next update into a hand edit.
+   - **The hook.** A hook the project had already is left, and read: say
+     what it runs, and whether that is the project's quick check. The
+     kit's own refuses every commit until its `QUICK_CHECK` is named, and
+     runs only once git is pointed at its folder with
+     `git config core.hooksPath .githooks`. Both are the `guardrails` skill's to do,
+     and it asks first.
+7. **Report,** in one message: what is left for the project, in the order
+   above; every file written; every file left as the project's; whether
+   the copy was checked; and that nothing is committed. The next step is
+   the `guardrails` skill, run in the project.
 
 ## Updating
 
 Where the project has a `guardrails/` folder with
 `guardrails/INSTALLED.md` in it. Two copies of the kit are got as
-_Getting the kit_ says: the **installed** one, at the version the record
-names, and the **newer** one.
+_Getting the kit_ says, from the same place: the **installed** one, at the
+version the record names, and the **newer** one. The newer kit's
+`INSTALL.md` is the one followed from here: the installed kit's may be out
+of date.
+
+A folder the record lists, such as `.claude/skills/bug`, is compared with
+the kit's `skills/bug`. `guardrails/INSTALLED.md` itself is never
+compared: it is the agent's.
 
 1. **Hand edits first.** Compare, byte for byte, the project's
    `guardrails/GUARDRAILS.md`, each file of `guardrails/checks/`, and each
    skill folder the record lists as the kit's, with the same files in the
-   installed copy. Any difference, a file added or a file gone is a hand
-   edit: see _A hand edit_. Nothing is written.
+   installed copy. Any difference is a hand edit, and so is a file added
+   to one of them or a file gone: see _A hand edit_. Nothing is written.
 2. **The diff.** Show the user the difference between the installed copy
    and the newer one, in the files the project has: the rules, the checks,
    and the skills the record lists as the kit's. A skill new in the newer
    kit is listed as one that would be added, unless the project has a
-   folder of that name, which stays its own.
+   folder of that name, which stays its own. Where the templates have
+   changed, show that too, as something the user may take into the files
+   made from them; those are the project's, and are not written.
 3. **Wait for the user's yes.** Without it nothing is written.
 4. **Write.** Replace the rules, the checks and the kit's skill folders
    with the newer kit's, byte for byte; remove a check or a skill the
    newer kit no longer has; add the new ones. The project's own files and
    folders are not touched. Update `guardrails/INSTALLED.md` to the newer
-   version, and its lists to what is now there.
-5. **Report** what changed, by file, and that nothing is committed. Where
-   the newer kit's templates have changed, say what changed in them: the
-   project's files made from them are its own, and taking a change in is
-   the user's call.
+   version, and its lists as _Installing_ says they are made. Check the
+   copy, as _Installing_ says.
+5. **Report** what changed, by file, whether the copy was checked, and
+   that nothing is committed.
 
 ## Refusals
 
@@ -167,7 +206,8 @@ A kit file in the project differs from the kit at the installed version.
 Name every file, with its diff. A change to a rule belongs in the kit,
 where every project gets it, or in the project's own `AGENTS.md`; once it
 is there, the file is put back as the kit had it, and the update run
-again.
+again. Putting it back loses the edit, so the agent does it only on the
+user's word.
 
 ### A guardrails folder the kit did not write
 

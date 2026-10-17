@@ -266,7 +266,7 @@ them in code. The trial does that instead.
       naming every path the kit writes, every refusal and every harness,
       and to naming no harness-only tool. Each part of the test is seen
       failing first.
-- [ ] **2. Tag `v0.1.0`.** It points at the first commit that has
+- [x] **2. Tag `v0.1.0`.** It points at the first commit that has
       `INSTALL.md` in it. *Check:* `git ls-remote --tags` shows it.
       Pushing the tag waits for the user to say so.
 - [x] **3. Take the installer out.** Remove `install.sh`,
@@ -275,7 +275,7 @@ them in code. The trial does that instead.
       skill's phase 5 to match. Add phase 0 (updating) to the skill.
       *Check:* `tests/run` is green, and nothing in the kit names
       `install.sh` or `MANIFEST`, which a test holds.
-- [ ] **4. Trial, three ways,** each by an agent on the cheaper model,
+- [x] **4. Trial, three ways,** each by an agent on the cheaper model,
       each in a fresh throwaway clone, each following `INSTALL.md` from
       the local kit:
       - a fresh install into sysmod
@@ -300,3 +300,42 @@ them in code. The trial does that instead.
   project's own with the same name. The file records the tag, the
   harnesses, and which skill folders are the kit's and which the
   project's. The kit keeps no `VERSION` file: the tag says it once.
+
+## What plan 2's trial found
+
+Run 2026-10-17 by three agents on the cheaper model, each following
+`INSTALL.md` in a throwaway clone, against a throwaway kit with `v0.1.0`
+and a `v0.1.1` that changed one rule and one skill. Each clone was then
+checked here, byte for byte, against the kit.
+
+- **The three promises held.** In ooergolf no tracked file changed: its
+  own `CLAUDE.md`, hook and four same-named skills came through, and
+  everything the kit wrote matched the kit. In sysmod the fresh install
+  matched. In the update, the hand edit to `guardrails/checks/fuzzer.md`
+  stopped it, named, with its diff; once the edit was taken out, the
+  `v0.1.0` to `v0.1.1` diff was shown, written on the yes, and the clone
+  matched `v0.1.1` exactly.
+- **What the agents had to guess, now said in `INSTALL.md`:** how to pick
+  the newest tag from `ls-remote` (versions, not text; pass over `^{}`);
+  `--depth` with a local copy; when the temporary folder goes; checking
+  the copy before it goes (one agent never did); that each skills folder
+  is decided by itself; what the record's two lists hold and how an empty
+  one is written; that the newer kit's `INSTALL.md` is followed for an
+  update; how a recorded folder maps to the kit's `skills/`; that the
+  record is never compared; that the templates' changes are shown before
+  the yes; that putting back a hand edit needs the user's word; that
+  _Before anything_ holds for an update; how a formatter is found, and
+  that only the user edits its ignore file; reading a hook the project
+  had; and one report, the pointer line first.
+
+A fourth agent then followed the changed `INSTALL.md` into a fresh
+ooergolf clone. It checked its copy, led its one report with the
+`@AGENTS.md` line, read the project's own hook and named what it runs,
+and its clone matched the kit byte for byte with no tracked file changed.
+What it still had to guess was the order of the record's lists and which
+paths to give the formatter's ignore file; the second is now said.
+
+Part 2's tag is on `42fe0b2`, which has the untrialled `INSTALL.md`. It
+is not pushed, so it can be moved to the commit with these changes
+without anyone having seen it; that is the user's call.
+
