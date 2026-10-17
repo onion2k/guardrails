@@ -660,7 +660,7 @@ stop repeating the kit.
       to try it on.
 - [x] **6. Release `v0.3.0`.** The commit and the tag, both only on the
       user's word, and pushed only on the user's word.
-- [ ] **7. Trim `~/.claude/CLAUDE.md`,** only on its own yes. It is
+- [x] **7. Trim `~/.claude/CLAUDE.md`,** only on its own yes. It is
       offered as a diff: the sections the kit now carries are replaced by
       a line saying the kit's `GUARDRAILS.md` holds in every project that
       has it, and what is left is this machine's own.
@@ -703,4 +703,8 @@ Run 2026-10-17 by two agents, against a throwaway kit tagged `v0.3.0`.
 Not verified, with no scratch GitHub repo to hand: whether a ruleset
 alone sets `protected`, and a real PR opened, checked and merged by the
 land skill.
+
+Part 7 was done on the user's yes, 2026-10-17: `~/.claude/CLAUDE.md` went
+from 241 lines to 41, the old kept beside it as
+`~/.claude/CLAUDE.md.before-guardrails`.
 
