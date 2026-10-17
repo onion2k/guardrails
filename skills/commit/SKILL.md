@@ -6,7 +6,15 @@ description: Commit the work in the house style. The checks run first, a refacto
 # commit
 
 Commit only when asked, on the branch the checkout is on, and then like
-this. Push, tag and release only when asked, each time.
+this, as `guardrails/GUARDRAILS.md`'s _Landing a change_ says. Pushing,
+PRs, merging and tagging are the land skill's, and happen only on the
+user's word.
+
+Where the checkout is on the project's default branch and the remote
+protects it, the change goes on a branch of its own, named for what it
+is, before it is committed: a commit on a protected default branch cannot
+land as it is. The default branch, and whether it is protected, are read
+from the remote as the land skill says, not assumed.
 
 ## 1. What is there
 
@@ -35,8 +43,9 @@ message says so.
 ## 4. The message
 
 Read the last few commits and match them. A sentence summary in the house
-voice, saying what the thing does now that it did not; then a body saying
-what changed and why, in prose, not a list of files. Where a figure moved,
+voice, ending in a full stop, saying what the thing does now that it did
+not; then a blank line, and a body saying what changed and why, in prose,
+not a list of files. Where a figure moved,
 the body says from what to what and why. Where something is still open,
 the body says so. Any attribution lines the harness or the user asks for
 go at the end.

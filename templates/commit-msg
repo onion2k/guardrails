@@ -1,0 +1,36 @@
+#!/bin/sh
+# The shape of a commit message: a sentence summary, a blank line, and a
+# body saying what changed and why. A message without a body says what
+# changed and not why, and the next reader has only the diff to go on.
+#
+# Git hands this the path of a file holding the message, its comment lines
+# not yet stripped. Git's own merge messages are let through as they are.
+# Skip it in an emergency with `git commit --no-verify`, and say so.
+
+# How long a summary line may be. A sentence in the house voice runs to
+# about eighty characters; past a hundred it is two sentences.
+SUMMARY_MAX=100
+
+message="$(grep -v '^#' "$1")"
+summary="$(printf '%s\n' "$message" | sed -n '1p')"
+second="$(printf '%s\n' "$message" | sed -n '2p')"
+body="$(printf '%s\n' "$message" | sed -n '3,$p' | grep -v '^[[:space:]]*$')"
+
+refuse() {
+  echo "commit-msg: $1" >&2
+  exit 1
+}
+
+case "$summary" in
+  "Merge "*) exit 0 ;;
+esac
+
+[ -n "$summary" ] || refuse "the message is empty"
+[ "${#summary}" -le "$SUMMARY_MAX" ] || refuse "the summary is ${#summary} characters; keep it to $SUMMARY_MAX, one sentence"
+case "$summary" in
+  [A-Z]*.) ;;
+  *) refuse "the summary is a sentence: a capital to start, a full stop to end" ;;
+esac
+[ -z "$second" ] || refuse "the summary is followed by a blank line, then the body"
+[ -n "$body" ] || refuse "there is no body: say what changed and why"
+exit 0

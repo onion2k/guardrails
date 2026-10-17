@@ -38,6 +38,9 @@ meant to do, and the report says they were.
   does not yet meet, with what stands in for it, and what only a person or
   another machine can check. A gate that is missing is said to be missing,
   so that a green check is not read as more than it holds.
+- **How a change lands:** the project's answers to the questions under
+  _Landing a change_: its merge style, and what an agent may do without
+  asking.
 - **Who uses it,** for a package: each project that pins it, and what of it
   each uses.
 
@@ -174,6 +177,7 @@ it has been seen to fail what it is for.
 | [gates](checks/gates.md)                       | a figure held to a budget and a baseline, both ways                 |
 | [look](checks/look.md)                         | what the user sees, held to pictures looked at                      |
 | [verification](checks/verification.md)         | that each check reaches what it says it does                        |
+| [landing](checks/landing.md)                   | the hooks, the remote's protection, and branches left behind        |
 | [mutation](checks/mutation.md)                 | a test seen to fail when its bug is put back                        |
 
 ## Verifying
@@ -283,16 +287,56 @@ decided and ruled out, in their own words; where the work stands, by
 commit; every figure, path and seed; what is open; and what was tried and
 set aside, with why.
 
-## Commits
+## Landing a change
 
-Commit only when asked, on the branch the checkout is on, and push, tag,
-release or publish only when asked, each time. A commit message is a
-sentence summary in the house voice, and a body saying what changed and
-why. A refactor and a feature that land together are two commits, each
-green on the quick check as it stands, and the pass is run once before the
-work lands on main, not for each commit on the way. A baseline written
-again goes in the commit that moved it, and a commit made with a gate red
-says so. Once work has landed, the snapshots, branches and worktrees it
-was built from are cleared, each checked against what landed first. The
-pre-commit hook runs the quick check; skip it only in an emergency and say
-so.
+How a change gets from the working tree to the project's default branch,
+the same in every project. The project file's _How a change lands_ holds
+the project's own answers to the questions at the end.
+
+- **A commit** is made only when asked, on the branch the checkout is on.
+  Its message is a sentence summary in the house voice, a blank line, and
+  a body saying what changed and why; the `commit-msg` hook holds the
+  shape. A refactor and a feature that land together are two commits,
+  each green on the quick check as it stands. A baseline written again
+  goes in the commit that moved it, and a commit made with a gate red says
+  so. The pre-commit hook runs the quick check; skip it only in an
+  emergency, and say so.
+- **Where a change is made** is the remote's to say. The default branch
+  is read from the remote, never assumed to be `main`. Where it is not
+  protected, a change is made on it and pushed straight there. Where it
+  is protected, by branch protection or by a ruleset that asks for a pull
+  request, a change is made on a branch of its own, named for what it is,
+  and lands by PR. Protection of any kind counts: a project that wants
+  pushes straight to the default branch leaves it unprotected, and one
+  that protects it, for whatever reason, lands by PR. This is read from
+  the remote each time a change lands,
+  and never remembered. A push the remote refuses stops the work: it is
+  said, and the change goes by PR.
+- **Green before** each step: the quick check before a commit, through
+  the hook. The pass of the definition of done before a change lands on
+  the default branch, once, not for each commit on the way. CI green
+  before a PR merges.
+- **A PR** says what changed and why, the definition of done point by
+  point, and what was not verified, so that it stands by itself for a
+  reader who sees nothing else.
+- **Merging** is in the project's merge style, a merge commit unless its
+  file says otherwise, with CI green.
+- **Releases** are a semver tag, annotated, on the commit released, and a
+  line in the project's release notes saying what changed. A tag that has
+  been pushed is never moved or deleted: somebody may have it. One not
+  yet pushed may be moved, on the user's word.
+- **Clearing up:** once work has landed, the branches, worktrees and
+  snapshots it was built from are removed, each checked against what
+  landed first.
+- **Who may act:** pushing, opening a PR, merging a PR and tagging each
+  happen only on the user's word, each time. A project may grant pushing
+  and opening PRs without asking, in its file, and the grant names what
+  it allows, who gave it and when. Nothing a grant does not name is
+  allowed by it, and merging and tagging are never granted by default.
+
+The questions a project answers, at install or when its file lacks them:
+
+1. **Merge style:** a merge commit (recommended), squash, or rebase.
+2. **What an agent may do without asking:** nothing (recommended), or
+   push and open PRs. Merging and tagging are asked each time whatever
+   the answer.

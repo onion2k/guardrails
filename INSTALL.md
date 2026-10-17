@@ -43,6 +43,17 @@ This holds for an update as much as for an install.
    On an update, the user is asked whether the harnesses are still the
    ones the record names.
 
+4. **How a change lands,** the two questions at the end of
+   `guardrails/GUARDRAILS.md`'s _Landing a change_, asked as they are
+   written there, each with its recommendation:
+   - the **merge style**: a merge commit, squash, or rebase
+   - **what an agent may do without asking**: nothing, or push and open
+     PRs. A yes is a grant, recorded with who gave it and the date.
+     Merging and tagging are asked each time, whatever the answer.
+
+   On an update, these are asked only where the project file has no
+   answers to them yet.
+
 ## Getting the kit
 
 The kit is released as git tags, `v0.1.0` and on. The newest is the
@@ -92,8 +103,15 @@ Where the project has no `guardrails/` folder.
    - `AGENTS.md`, from `templates/AGENTS.md`
    - `CLAUDE.md`, from `templates/CLAUDE.md`, for Claude Code
    - `GEMINI.md`, from `templates/GEMINI.md`, for Gemini CLI
-   - `.githooks/pre-commit`, from `templates/pre-commit`, made executable
-     where the system has such a thing
+   - `.githooks/pre-commit`, from `templates/pre-commit`, and
+     `.githooks/commit-msg`, from `templates/commit-msg`, each made
+     executable where the system has such a thing
+
+   Where the install writes `AGENTS.md`, it fills in _How a change lands_,
+   each bracketed default replaced by the answer in plain words, with the
+   answers to the questions in _Before anything_: the merge style,
+   and what an agent may do without asking, with the grant's who and date
+   where there is one.
 
    These are the project's from then on, and an update never touches
    them.
@@ -140,7 +158,9 @@ Where the project has no `guardrails/` folder.
          Read guardrails/GUARDRAILS.md before changing anything: @guardrails/GUARDRAILS.md
 
      and each heading of `templates/AGENTS.md` it lacks is listed: the
-     skills look for them by name.
+     skills look for them by name. The answers to the questions about how
+     a change lands are given as the lines to add under _How a change
+     lands_.
 
    - **A formatter.** Where the project has one (a prettier, biome or
      dprint config file at its root, or a `prettier` key in its

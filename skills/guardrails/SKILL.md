@@ -55,6 +55,14 @@ from which commit.
 - Keep it to two hundred lines or so. What was tried goes in the commit; a
   figure stays in the file a tool holds it in.
 
+### How a change lands
+
+Where the project file has no answers under _How a change lands_, ask the
+two questions at the end of `GUARDRAILS.md`'s _Landing a change_, as they
+are written there, each with its recommendation, and write the answers
+in. A grant to act without asking is written with who gave it and the
+date.
+
 ## 3. Survey, then stop
 
 Go through every file in `guardrails/checks/`, in the order of the table in

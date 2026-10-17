@@ -98,6 +98,36 @@ Not settled from the docs:
   `CLAUDE.md`. Neither matters here: it reads `AGENTS.md`, and is told in
   words to read `GUARDRAILS.md`.
 
+## How a change lands on a GitHub remote
+
+Read as a stranger on 2026-10-17, with `gh api`:
+
+| Repo               | Default branch | `protected` | Ruleset rule types on it                             |
+| ------------------ | -------------- | ----------- | ---------------------------------------------------- |
+| cli/cli            | `trunk`        | true        | copilot_code_review                                  |
+| microsoft/vscode   | `main`         | true        | deletion, non_fast_forward, pull_request, …          |
+| facebook/react     | `main`         | true        | deletion, non_fast_forward, pull_request             |
+| github/docs        | `main`         | true        | pull_request, merge_queue, required_status_checks, … |
+| golang/go          | `master`       | true        | none                                                 |
+| onion2k/guardrails | `main`         | false       | none                                                 |
+
+What the kit does about it:
+
+- **The default branch is read, never assumed to be `main`:**
+  `gh api repos/<owner>/<repo> --jq .default_branch`.
+- **A change lands by PR** where `gh api repos/<owner>/<repo>/branches/<default>`
+  says `protected: true`, or where `gh api repos/<owner>/<repo>/rules/branches/<default>`
+  lists a rule of type `pull_request`, `update` or `merge_queue`.
+  Both are readable by anyone who can read the repo; the protection's
+  detail, at `.../protection`, is not.
+- **A push the remote refuses** stops the work, is said, and the change
+  goes by PR instead.
+
+Not settled: whether a ruleset alone, with no classic protection, sets
+`protected`. Every repo read above that had rulesets also reported
+`protected: true`. Only a repo of one's own can show it, and none was to
+hand, so the kit reads both and counts either.
+
 ## Installing
 
 There is no script to run: an agent installs the kit by following
@@ -142,10 +172,11 @@ Each release is a git tag, `v0.1.0` and on. `INSTALL.md` installs the
 newest, and an update compares the project's files with the kit at the tag
 it has, which is how a hand edit is told from the kit's own.
 
-| Tag      | What changed                                                                                         |
-| -------- | ---------------------------------------------------------------------------------------------------- |
-| `v0.1.0` | The first: the rules, eleven checks, five skills, installed by an agent alone.                       |
-| `v0.2.0` | Formatting, lint, structure and verification as checks of their own; the quick check points at them. |
+| Tag      | What changed                                                                                                                                |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `v0.1.0` | The first: the rules, eleven checks, five skills, installed by an agent alone.                                                              |
+| `v0.2.0` | Formatting, lint, structure and verification as checks of their own; the quick check points at them.                                        |
+| `v0.3.0` | How a change lands: the remote's protection picks push or PR, merge style and grants asked at install, the land skill, the commit-msg hook. |
 
 ## Left out on purpose
 

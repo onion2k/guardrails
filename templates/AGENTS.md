@@ -82,6 +82,18 @@ before and after, a picture in ...]. The pass is [full check] green, and
   meet, with what stands in for it.]
 - [What only a person, or another machine, can check.]
 
+## How a change lands
+
+The rules are guardrails/GUARDRAILS.md's _Landing a change_. This
+project's answers:
+
+- **Merge style:** [a merge commit]
+- **What an agent may do without asking:** [nothing]
+
+Whether a change goes straight to the default branch or by PR is the
+remote's to say, by protecting the branch or not, and is read from it
+each time.
+
 ## Who uses it
 
 [For a package: each project that pins it, and what of it each uses. For

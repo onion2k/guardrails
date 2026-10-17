@@ -512,3 +512,195 @@ here afterwards.
   in `INSTALL.md`, how a local copy's tags are listed, that a skill in two
   folders is shown once, and when the record's lists are made again.
 
+
+---
+
+# Plan 4: how a change lands
+
+Written 2026-10-17, on `be53bd2` (`v0.2.0`). Nothing is built until the
+user says go.
+
+## Aim
+
+The kit governs a change from spec to green, and stops at "lands on
+main" without saying what landing is. This plan says it, the same in every
+project: committing, pushing, branching, PRs, merging, releasing and
+clearing up. A project's own choices are kept in its `AGENTS.md`, asked
+for at install. It also lets the user's personal `~/.claude/CLAUDE.md`
+stop repeating the kit.
+
+## Decided by the user
+
+- **Straight to main is the default.** A project that wants PRs says so
+  by protecting `main` at its remote. A protected `main` is how the kit
+  knows to land through a PR. It is read from the remote each time a
+  change lands, never remembered, so the remote stays the one place it is
+  said.
+- **Merge commits are the default.** The install asks, and the answer
+  goes in `AGENTS.md`.
+- **Nothing is pushed or PR'd without asking,** each time. The install
+  asks whether the user wants to overrule that for this project. Only on
+  a yes does a line go in `AGENTS.md`, saying what is allowed, who allowed
+  it, and when.
+
+## Design
+
+- **`GUARDRAILS.md`'s Commits section becomes _Landing a change_.** It
+  says, in this order:
+  - what a commit holds and how its message reads
+  - where a change is made: on `main`, or on a branch of its own when
+    `main` is protected, named for what it is
+  - what is green before a push (the quick check, through the hook) and
+    before landing on main (the pass)
+  - how a PR describes itself: what changed, why, the definition of done
+    point by point, and what was not verified
+  - how it merges: the project's style, CI green
+  - releases: a semver tag, annotated, recorded in the project's release
+    notes. A pushed tag is never moved or deleted; one not yet pushed may
+    be, on the user's word, which is what this kit did with `v0.1.0`.
+  - clearing up: once work has landed, the branch, worktree and snapshot
+    it was built from are removed, each checked against what landed first
+  - who may act: pushing, opening a PR, merging and tagging each happen
+    only on the user's word, each time, unless the project file grants
+    one. A grant names what it allows, and never more.
+- **Reading the remote.** On GitHub, `gh api repos/<o>/<r>/branches/main`
+  gives `protected`, readable by anyone who can read the repo (checked
+  2026-10-17: true for prettier/prettier, false for this kit). Rulesets
+  may protect a branch without setting that field, so
+  `gh api repos/<o>/<r>/rules/branches/main` is read as well, and any rule
+  of type `pull_request` means PRs too. With no `gh`, another host, or no
+  remote, the agent asks the user and does not guess.
+- **The project file** gains the heading _How a change lands_, with
+  `[merge style]` and `[what an agent may do without asking: nothing]`.
+  The heading joins the list in `GUARDRAILS.md`, and the existing test
+  holds the template to it. Branch strategy is deliberately not in it,
+  since the remote says that.
+- **`INSTALL.md`** asks the two questions after the harnesses: merge style
+  (merge commit recommended; squash; rebase), and whether to overrule
+  "never without asking" for pushing and opening PRs. Merging a PR and
+  tagging stay ask-each-time unless the user names them. Where the
+  install writes `AGENTS.md` from the template, it fills the answers in.
+  Where the project has its own, it gives the lines to add. An update to
+  a kit with this heading shows it in the template diff. The `guardrails`
+  skill's phase 2 asks the same questions where the heading is missing or
+  unanswered. The questions are written once, in `GUARDRAILS.md`, and
+  both point to them.
+- **Skills.** `commit` gains the branch rule (never commit to a protected
+  `main`). A new `land` skill, asked for by name:
+  - reads the remote
+  - pushes, or opens a PR, only as the project file allows or the user
+    says
+  - says what CI shows, by reading it once each time it is asked, never
+    by polling
+  - merges in the project's style on the user's word
+  - clears up
+  - tags a release when asked
+
+  It names no harness tool and no host beyond the `gh` command, which is
+  said as one way among others for GitHub.
+- **A check, `checks/landing.md`.** What can be held, not just said:
+  - the hook installed and running the quick check
+  - for a protected `main`, required status checks that include the full
+    check, set at the remote
+  - a commit message's shape (a summary line under a length, a blank
+    line, a body), held by a `commit-msg` hook in the templates beside
+    `pre-commit`
+  - merged branches cleared, by a script that lists any left behind
+
+  The house voice of a message is not a check; it is said, and reviewed.
+
+## Out of scope
+
+- Setting branch protection on any remote. That is the user's, at the
+  remote.
+- CI for this kit's own repo.
+- Signing commits and tags.
+- Trimming `~/.claude/CLAUDE.md`. That is part 7 below, built only on its
+  own yes, and the kit never touches a user-level file itself.
+
+## Parts
+
+- [x] **0. Read protection for real.** On a repo of the user's: protect a
+      scratch branch with a ruleset, and see what each endpoint shows to
+      the owner. Read a public repo known to use rulesets, as a stranger.
+      *Check:* the README says which field answers "must this land by PR",
+      and how sure that is, with the date. Making the scratch ruleset
+      waits for the user to say so.
+- [x] **1. Tests first.** These cover four things:
+      - _Landing a change_ names each of its parts, in the order above.
+      - The project file headings include _How a change lands_, held
+        against the template by the existing test.
+      - `INSTALL.md` asks both questions, and points at `GUARDRAILS.md`
+        for them.
+      - The `land` skill passes the skills tests, and names no push or
+        merge without the words "only on the user's word" or the project
+        file's grant.
+
+      *Check:* each is seen failing first.
+- [x] **2. `GUARDRAILS.md`, the template, `INSTALL.md`.** *Check:* tests
+      green.
+- [x] **3. The `commit` and `land` skills, and the `guardrails` skill's
+      phase 2.** *Check:* tests green.
+- [x] **4. `checks/landing.md`, and `templates/commit-msg`.** The hook
+      refuses a message without a summary line and a body, and its tests
+      are run like the `pre-commit` hook's. *Check:* tests green, every
+      new test mutation-checked.
+- [x] **5. Trial,** by agents on the cheaper model, in throwaway clones:
+      - an install into a fresh sysmod clone that answers the two new
+        questions. `AGENTS.md` should come out with the merge style and
+        "nothing without asking".
+      - the `land` skill on a throwaway repo whose remote is a bare repo
+        on this machine (straight to `main`): it commits, then stops and
+        asks before pushing.
+      - the protection read, against prettier/prettier, read only, and it
+        should choose a PR.
+
+      What cannot be tried here (opening and merging a real PR) is said
+      under _not verified_, unless the user gives a scratch GitHub repo
+      to try it on.
+- [x] **6. Release `v0.3.0`.** The commit and the tag, both only on the
+      user's word, and pushed only on the user's word.
+- [ ] **7. Trim `~/.claude/CLAUDE.md`,** only on its own yes. It is
+      offered as a diff: the sections the kit now carries are replaced by
+      a line saying the kit's `GUARDRAILS.md` holds in every project that
+      has it, and what is left is this machine's own.
+
+## Decided, and found while building
+
+- **No scratch GitHub repo:** the ruleset-alone case in part 0 and a real
+  PR in part 5 are marked not verified.
+- **The grant covers pushing and opening PRs only.** Merging a PR and
+  tagging are asked each time.
+- **Part 0 found** that the default branch is not always `main`
+  (`trunk`, `canary`, `master` among the eight read). The kit reads it,
+  and everything in this plan that says `main` means the default branch.
+  A ruleset is read as a stranger, and `pull_request`, `update` or
+  `merge_queue` among its rules means a PR. The README has the table.
+
+## What plan 4's trial found
+
+Run 2026-10-17 by two agents, against a throwaway kit tagged `v0.3.0`.
+
+- **Install and land, on a sysmod clone whose `origin` was a throwaway
+  bare repo,** never the real checkout or GitHub, which were checked
+  afterwards to be untouched. `AGENTS.md` came out with "a merge commit"
+  and "nothing". The commit message passed the `commit-msg` hook. The land
+  skill could not read protection from a bare repo, asked the user rather
+  than guess, and asked again before the push, naming the commit, branch
+  and remote. Only then did it push. Auto mode flagged the push as a
+  publication; it was the trial's, to the throwaway remote, on the trial
+  user's yes.
+- **The protection read, on prettier/prettier, read only.** It found
+  `main`, `protected: true`, and no ruleset rules, and chose a PR. It
+  asked whether protection that only forbids a force push still means a
+  PR. The user's rule is that protection of any kind is the signal, and
+  the rules and the land skill now say so, with the empty-ruleset case.
+- **Changed because of it:** a template's bracketed defaults are replaced
+  by the answers in plain words; a plain git remote always means asking;
+  and where the pass cannot be run before a land, the push's question
+  says so, and the user decides whether it lands unchecked.
+
+Not verified, with no scratch GitHub repo to hand: whether a ruleset
+alone sets `protected`, and a real PR opened, checked and merged by the
+land skill.
+
