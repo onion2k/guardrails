@@ -46,7 +46,10 @@ and every fork, whatever is done to the tree afterwards.
 
 gitleaks 8 (8.30, October 2026); the hook's line is the one gitleaks'
 own pre-commit hook runs. `gitleaks git --staged` scans what is staged,
-and `gitleaks git` the history, and both exit 1 on a finding. `protect`
+and `gitleaks git` the history, and both exit 1 on a finding.
+`--verbose` is what prints each finding's rule, file, line and commit;
+without it a failing run says only how many it found. `--redact` keeps
+the secret itself out of the output. `protect`
 and `detect`, which older guides use, were deprecated in 8.19. gitleaks
 is feature complete and takes security fixes only: its authors have moved
 on to Betterleaks (MIT, by gitleaks' original author), which a project

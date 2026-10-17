@@ -1111,8 +1111,20 @@ tagged `v0.5.0`. Each finding was confirmed here.
       against its docs
   - `.env.example` holds every name read from the environment, secret or
     not.
-- **Not verified:** the planted key refused by the gitleaks hook, and a
-  history scan, since gitleaks is not installed here; and zizmor run on
-  the workflows, which were read by eye against `ci.md` instead. The
-  hook's line is the one gitleaks' own pre-commit hook runs.
+- **Verified afterwards,** on the user's yes to installing gitleaks
+  8.30.1 with Homebrew, in a throwaway repo given the kit's `pre-commit`
+  template with `secrets.md`'s line:
+  - a clean commit passed
+  - a made-up key of AWS's shape was refused, named by rule, file and
+    line, with the key redacted
+  - AWS's documented `EXAMPLE` key was let through, as `secrets.md` warns
+  - a key committed past the hook, buried under three commits and then
+    deleted from the tree, was found by the history scan, by rule, file
+    and commit
+  - the kit's own history scans clean
+
+  The one thing learned: without `--verbose` a failing scan names
+  nothing, which `secrets.md` now says.
+- **Not verified:** zizmor run on the workflows, which were read by eye
+  against `ci.md` instead.
 
