@@ -10,11 +10,12 @@ for you.
 That what is committed passes each of its parts, in this order, cheapest
 first so that a failure is found quickly:
 
-1. the formatter, as a check ([formatting.md](formatting.md))
-2. the types
-3. lint ([lint.md](lint.md)), and the structure rules where they are
+1. the secret scan, over what is staged ([secrets.md](secrets.md))
+2. the formatter, as a check ([formatting.md](formatting.md))
+3. the types
+4. lint ([lint.md](lint.md)), and the structure rules where they are
    fast enough ([structure.md](structure.md))
-4. the unit tests ([unit.md](unit.md))
+5. the unit tests ([unit.md](unit.md))
 
 Each part's file says what it holds. This one holds that they run, before
 every commit, whoever makes it: git runs the hook, not a harness. It is

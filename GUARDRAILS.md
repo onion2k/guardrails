@@ -94,6 +94,15 @@ holds it: copied into the file, it is soon wrong.
 - **What comes from outside is checked.** A save, an export, a request, a
   file a tool writes or a value in an address is read as if anyone had
   written it, and what is not known is refused by name.
+- **A secret never enters the tree.** Keys, tokens and passwords come
+  from the environment or a secret store, and the tree carries an example
+  with the names and no values. One that is committed is rotated, not
+  only removed: the history keeps it, and so does every clone. Held by
+  [checks/secrets.md](checks/secrets.md).
+- **The least that works.** A token, a workflow, a deploy key or a process
+  is given only what its job needs, and a third-party action, script or
+  image is pinned to what was read. Held, for CI, by
+  [checks/ci.md](checks/ci.md).
 - **A package changes nothing for a project that did not ask.** New
   behaviour is an option whose default is the old, a fix that would change
   how a consumer runs is a switch it turns on, and a gate holds the old
@@ -172,8 +181,10 @@ it has been seen to fail what it is for.
 | Check                                          | What it holds                                                       |
 | ---------------------------------------------- | ------------------------------------------------------------------- |
 | [quick check](checks/quick-check.md)           | what runs before a commit, and in what order                        |
+| [secrets](checks/secrets.md)                   | no key, token or password in the tree or its history                |
 | [formatting](checks/formatting.md)             | one formatter deciding every file it should                         |
 | [lint](checks/lint.md)                         | mistakes the compiler lets through, and the rules a linter can hold |
+| [code scanning](checks/code-scanning.md)       | data from outside reaching a query, a shell or the page unchecked   |
 | [structure](checks/structure.md)               | what may import what                                                |
 | [dependencies](checks/dependencies.md)         | installs exact, advisories seen, licences allowed, nothing unused   |
 | [unit](checks/unit.md)                         | the thing's working parts, headless and seeded                      |
@@ -185,7 +196,9 @@ it has been seen to fail what it is for.
 | [bounded](checks/bounded.md)                   | what is kept staying under its ceiling                              |
 | [gates](checks/gates.md)                       | a figure held to a budget and a baseline, both ways                 |
 | [look](checks/look.md)                         | what the user sees, held to pictures looked at                      |
+| [headers](checks/headers.md)                   | what a served page tells the browser to refuse                      |
 | [verification](checks/verification.md)         | that each check reaches what it says it does                        |
+| [CI](checks/ci.md)                             | workflows given least access, pinned to what was read               |
 | [landing](checks/landing.md)                   | the hooks, the remote's protection, and branches left behind        |
 | [mutation](checks/mutation.md)                 | a test seen to fail when its bug is put back                        |
 
@@ -203,6 +216,9 @@ How a project is held to these, check by check, is in
   headless setup.
 - **Control time** through the test API: start stopped and seeded, set the
   scene, step. Never wait on a timeout.
+- **A secret is never printed,** written to a file, sent, or put in a
+  commit, a log or a report. One seen in the tree is named by its path
+  and line, never quoted, and rotating it is put to the user first.
 - **Never touch what is the user's.** A test's save, config or store goes
   in through the test setup, in a fresh context. Their browser, their
   server, their checkout and their data are left exactly as they were, and

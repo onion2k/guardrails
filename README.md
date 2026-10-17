@@ -178,6 +178,7 @@ it has, which is how a hand edit is told from the kit's own.
 | `v0.2.0` | Formatting, lint, structure and verification as checks of their own; the quick check points at them.                                        |
 | `v0.3.0` | How a change lands: the remote's protection picks push or PR, merge style and grants asked at install, the land skill, the commit-msg hook. |
 | `v0.4.0` | Dependencies: a rule that one is taken in on purpose, and a check for exact installs, advisories, licences, unused packages and updates.    |
+| `v0.5.0` | Security: secrets kept out of the tree, code scanning, CI held to least access and pinned actions, and a served page's headers.             |
 
 ## Left out on purpose
 

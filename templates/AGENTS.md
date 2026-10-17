@@ -74,6 +74,8 @@ For anything new, check what it does:
   exception is written with why, and looked at again within 90 days]
 - **Allowed licences:** [MIT, BSD-2-Clause, BSD-3-Clause, ISC, Apache-2.0,
   0BSD, Unlicense; anything else asked about by name]
+- **Accepted findings:** [where the secret scan's and code scanning's
+  accepted findings are kept, each with its reason: none yet]
 
 ## Done, here
 

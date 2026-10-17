@@ -101,12 +101,17 @@ rest.
 
 The order is usually the table's. The quick check and its hook come first,
 with the formatter and lint in it, since every later check lands through
-it; then the structure rules, the dependencies, unit tests and the seeded
-source, the test
+it, the secret scan among them; then code scanning, the structure rules,
+the dependencies, unit tests and the seeded source, the test
 API, the invariants, the fuzzer, and the rest. Verification comes once
 there is a full check to run, and somewhere other than this machine to run
 it. A project with a known fault takes the check that would have caught it
 early.
+
+A secret found while surveying is reported by its path and line, never
+quoted, and rotating it is put to the user before anything else in the
+plan: removing it from the tree does not take it out of the history or
+anyone's clone.
 
 Where the project pins packages of its own by a git tag, say for each
 which tag it pins, the package's newest, and the other projects that pin

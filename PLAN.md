@@ -899,3 +899,220 @@ each clone checked here afterwards.
   bracketed default is no answer; and on an update the dependency
   answers come from the newer kit and are given as lines to add.
 
+
+---
+
+# Plan 6: security
+
+Written 2026-10-17, on `315595c` (`v0.4.0`). Nothing is built until the
+user says go.
+
+## Aim
+
+Plan 5 held what a project takes in. This plan holds the rest of what
+keeps a project safe: secrets kept out of the tree, the code read for the
+mistakes that become holes, CI that cannot be turned against the project,
+and a site's headers. Each part is a check a project is surveyed against
+and taken up one at a time, seen failing on a fault put there on purpose.
+
+Today, across the user's 47 repos (read 2026-10-17):
+
+- no secret scanner on this machine, and no tracked `.env` (two projects
+  track a `.env.example`)
+- 11 GitHub workflows. Two (artshape, artshape-render) have no
+  `permissions:` block, so they run with the token's default access.
+  Every action is pinned by a tag, not a commit, and two are third-party
+  actions on refs that move: `tauri-apps/tauri-action@v0` and
+  `dtolnay/rust-toolchain@stable`, in emu's release workflow.
+
+## The rules
+
+`GUARDRAILS.md`'s Structure already says what comes from outside is
+checked. It gains two bullets, each pointing at the check that holds it:
+
+- **A secret never enters the tree.** Keys, tokens and passwords come
+  from the environment or a secret store. The tree carries an example
+  with the names and no values. One that is committed is rotated, not
+  just removed: the history keeps it.
+- **The least that works.** A token, a workflow, a deploy key or a
+  process is given only what its job needs, and a third-party action,
+  script or image is pinned to what was read.
+
+The agent's side goes in _Verifying_, beside "never touch what is the
+user's": a secret is never printed, written to a file, sent or put in a
+commit or a report, and one seen in the tree is named by its path and
+line, not quoted.
+
+## The checks
+
+Each has the four sections every check has. TypeScript and GitHub come
+first, with what stands in for other languages and hosts.
+
+- **`checks/secrets.md`.**
+  - A secret scanner runs in the hook, over what is staged: it is fast
+    and needs no network, and a secret is cheapest to catch before its
+    commit.
+  - It runs again in CI over the whole history, and the host's own push
+    protection is turned on where the host has it.
+  - The example env file is checked to name every variable the code
+    reads, with no values.
+  - A finding the project accepts (a test fixture, a public key) is
+    allowed by fingerprint, with a reason.
+  - _Seen failing:_ a fake key in the scanner's own test format is staged
+    and refused; one buried three commits back is found by the history
+    scan.
+- **`checks/code-scanning.md`.**
+  - Static analysis for security, distinct from lint: it reads data from
+    a source (a request, a file, a message) to a sink (a query, a shell,
+    the page's HTML) and flags what goes through unchecked.
+  - It runs in CI and on a schedule. A finding is fixed, or dismissed
+    with a reason that the next scan keeps.
+  - _Seen failing:_ a planted string concatenated into a shell command,
+    or user input written into `innerHTML`.
+- **`checks/ci.md`.** A workflow is code with the project's keys:
+  - every workflow says its `permissions:`, read-only by default, with
+    write access granted per job and per reason
+  - third-party actions are pinned to a full commit hash, with the tag in
+    a comment, and kept current by the update bot plan 5 set up
+  - no `pull_request_target` job checks out and runs a fork's code
+  - secrets are passed only to the steps that need them, and never
+    echoed
+  - _Seen failing:_ a workflow with no `permissions:`, and one using an
+    action by a moving ref, are each flagged by a workflow linter.
+- **`checks/headers.md`,** for anything served over HTTP:
+  - a Content Security Policy with no `unsafe-inline` for scripts
+  - HSTS, `X-Content-Type-Options: nosniff`, a frame policy, and a
+    referrer policy
+  - each read from the built thing as served, not the config that is
+    meant to set them
+  - _Seen failing:_ the policy loosened by a line, and the check seeing
+    it in the response.
+  - _Where it cannot apply:_ a package, a CLI, and a static host that
+    cannot set headers, which says so under _What is not held_ and sets
+    what it can with a meta tag.
+
+The table puts secrets with the quick check, since its hook is part of
+it; code scanning after lint; CI with verification; and headers after the
+look. The order is held by the existing test.
+
+## What else changes
+
+- **The quick check** lists the secret scan among what runs before a
+  commit, and points at `secrets.md`.
+- **The template's _Gates_** gains where accepted findings are kept, for
+  secrets and code scanning, with their reasons.
+- **The `guardrails` skill** surveys the new checks, reports a finding by
+  path and line and never the secret itself, and puts "rotate it" to the
+  user first where a live secret is found.
+- **`INSTALL.md`** asks nothing new: none of this is a matter of taste.
+
+## Out of scope
+
+- Fixing what the survey finds in any project. Each project fixes its
+  own, one check at a time, on the user's word.
+- Turning on the host's settings (push protection, code scanning's
+  default setup). The check says which to turn on; the user does it.
+- Penetration testing, threat models, and authentication and session
+  design. These are a project's own, too particular for a kit.
+- Signing commits and tags, SBOMs and provenance. They are worth a plan
+  once a project publishes to a registry, which none of the user's do
+  today.
+
+## Parts
+
+- [x] **1. Look up the tools,** from current docs, with sources and dates:
+      gitleaks (its hook over staged files, its history scan, an allow
+      list by fingerprint) against trufflehog; GitHub secret scanning and
+      push protection; CodeQL's default setup for public repos against
+      semgrep; actionlint and zizmor for workflows; pinning actions by
+      hash, and Dependabot keeping the pins current; Mozilla's
+      Observatory or a local header check for sites. *Check:* a source
+      for each name, in the commit message.
+- [x] **2. Tests first.** These cover four things:
+      - The two new Structure bullets point at their checks.
+      - _Verifying_ has the secret-handling line.
+      - The table's order, by the existing test.
+      - The quick check names the secret scan.
+
+      *Check:* each is seen failing first.
+- [x] **3. The four check files, the rules, the quick check, the
+      template, the skill.** *Check:* tests green, every new test
+      mutation-checked.
+- [x] **4. Trial,** by agents on the cheaper model, in throwaway clones:
+      - emu's workflows read against `ci.md`, which should flag the two
+        moving refs and say what each should be pinned to. Read only.
+      - artshape-render's `check.yml` read against `ci.md`, which should
+        flag the missing `permissions:`.
+      - a planted fake key in a clone of ooergolf, staged and refused by
+        the scanner's hook, and a history scan of the clone that reports
+        what it finds by path and line only.
+      - an update of a sysmod clone from `v0.4.0` to the new tag.
+
+      *Check:* each clone read here, and no secret quoted in any report.
+- [x] **5. Release `v0.5.0`.** The commit, the tag and the pushes, each
+      only on the user's word.
+
+## Decided
+
+All three recommendations, by the user, 2026-10-17. While building,
+gitleaks turned out to be in maintenance: feature complete, security
+fixes only, its authors moved to Betterleaks, whose version 2 is in
+release candidates. The answer stands, since a hook wants what does not
+move, and `secrets.md` names Betterleaks as the successor.
+
+## Open for the user (as written; answered above)
+
+- **The secret scanner.** The recommendation is gitleaks: one binary,
+  fast enough for the hook, and an allow list by fingerprint. trufflehog
+  verifies keys against their services, which is more than a hook needs.
+- **Code scanning.** The recommendation is CodeQL's default setup on
+  GitHub, which is free for public repos and turned on in settings with
+  no workflow to keep. semgrep, in a workflow, is for a private repo or
+  another host.
+- **Pinning by hash.** The recommendation is to pin third-party actions by
+  hash, and let GitHub's own `actions/*` stay on major tags, since a
+  hash on every line is noise and GitHub's own are the least likely to be
+  turned. The alternative is every action by hash.
+
+## What plan 6's trial found
+
+Run 2026-10-17 by two agents in throwaway clones, against a throwaway kit
+tagged `v0.5.0`. Each finding was confirmed here.
+
+- **ci.md found what it is for.**
+  - emu's `release.yml` gives `contents: write` to the whole workflow
+    (lines 8 and 9), and uses two third-party actions on moving refs:
+    `dtolnay/rust-toolchain@stable` (line 36) and
+    `tauri-apps/tauri-action@v0` (line 44). Pinned to what they are today:
+    `dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec`
+    (the `stable` branch, read 2026-10-17; it has no tag) and
+    `tauri-apps/tauri-action@84b9d35b5fc46c1e45415bdb6144030364f7ebc5`
+    (`action-v0.6.2`, which `v0` points at). Its newest release is
+    `action-v1.0.0`, a major step.
+  - artshape-render's `check.yml` has no `permissions:` block.
+
+  These are those projects' own to fix.
+- **The update held.** A sysmod clone on `v0.4.0` was updated to
+  `v0.5.0`: the four checks added, the rest changed as shown, the
+  template's new line given as one to add, and the clone matched `v0.5.0`
+  byte for byte. sysmod reads one variable from the environment (`PORT`)
+  and holds no secret.
+- **Changed because of it.**
+  - In `ci.md`:
+    - a write permission goes on the job even in a one-job workflow
+    - the default `GITHUB_TOKEN` counts as a secret
+    - "GitHub's own" means `actions/*`, and every other organisation is
+      pinned by hash
+    - an action with only a branch is pinned to its commit, with the
+      branch and date in the comment
+    - an input an action runs as code is held like `run:`
+    - zizmor's policy config is given, `.github/zizmor.yml` with
+      `actions/*: ref-pin` and `*: hash-pin`, both patterns checked
+      against its docs
+  - `.env.example` holds every name read from the environment, secret or
+    not.
+- **Not verified:** the planted key refused by the gitleaks hook, and a
+  history scan, since gitleaks is not installed here; and zizmor run on
+  the workflows, which were read by eye against `ci.md` instead. The
+  hook's line is the one gitleaks' own pre-commit hook runs.
+
