@@ -353,6 +353,12 @@ the project's own answers to the questions at the end.
 - **Clearing up:** once work has landed, the branches, worktrees and
   snapshots it was built from are removed, each checked against what
   landed first.
+  A session leaves nothing of its own behind: when its work stops, what
+  it made is landed, parked on a branch with a line saying what it is and
+  why it stopped, or removed on the user's word. That covers its commits,
+  branches, worktree, stashes and PRs. What it finds of anyone else's is
+  reported, not touched. The tidy skill finds what is left, wherever it
+  was done.
 - **Who may act:** pushing, opening a PR, merging a PR and tagging each
   happen only on the user's word, each time. A project may grant pushing
   and opening PRs without asking, in its file, and the grant names what
@@ -365,3 +371,6 @@ The questions a project answers, at install or when its file lacks them:
 2. **What an agent may do without asking:** nothing (recommended), or
    push and open PRs. Merging and tagging are asked each time whatever
    the answer.
+3. **Stale after:** how long a branch or PR may go without a commit
+   before the tidy skill calls it stale: 30 days (recommended), or the
+   project's own.

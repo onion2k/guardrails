@@ -97,7 +97,8 @@ may be moved, on the user's word, and the move is said.
 Once the work has landed: the branch it was made on, local and remote,
 any worktree and any snapshot it was built from, each removed after
 checking that what it held is in what landed. A branch that holds
-anything that did not land is kept, and said.
+anything that did not land is kept, and said. Then run the tidy skill's
+find (its steps 1 to 3) and say anything else it shows.
 
 ## 8. Report
 

@@ -19,10 +19,12 @@ from the remote as the land skill says, not assumed.
 ## 1. What is there
 
 The working tree's status and diff. Say what is in it in a line, and
-notice what should not be committed: test output, a user's data, a
-baseline or picture that was written and not looked at, and another
-session's or person's work. Work that is not yours is left alone: not
-committed, stashed, reset or reformatted. Say it is there.
+notice a stash, or a `parked/` branch, that holds the same work, and say
+so before committing it twice. Notice what should not be committed: test
+output, a user's data, a baseline or picture that was written and not
+looked at, and another session's or person's work. Work that is not
+yours is left alone: not committed, stashed, reset or reformatted. Say it
+is there.
 
 ## 2. Green first
 

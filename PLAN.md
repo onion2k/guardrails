@@ -1128,3 +1128,235 @@ tagged `v0.5.0`. Each finding was confirmed here.
 - **Not verified:** zizmor run on the workflows, which were read by eye
   against `ci.md` instead.
 
+
+---
+
+# Plan 7: nothing left behind
+
+Written 2026-10-17, on `7c88cbf` (`v0.5.0`). Nothing is built until the
+user says go.
+
+## Aim
+
+Work is done in local sessions, in worktrees, in cloud sessions that push
+branches of their own, and by hand. Each leaves something when it stops:
+changes not committed, commits not pushed, branches not merged or merged
+and not deleted, worktrees, stashes, PRs no one closed. The kit says that
+once work has landed what it was built from is cleared, and nothing makes
+sure. This plan adds a skill that finds what is left in a project,
+wherever it was made, says what each thing is, and settles each one on
+the user's word, plus a rule that a session ends with nothing of its own
+left lying about.
+
+Read only, on 2026-10-17, across `~/projects`:
+
+- **26 projects have something left.**
+  - Uncommitted changes in 21: ooergolf 101 files, humanity 60, wps 21,
+    ooerfish 17.
+  - Worktrees besides the checkout in 7: artshape-game-template has 3.
+  - Local branches not merged in 5, and commits not pushed in 2 (shump,
+    testgen).
+- **On GitHub,** ooergolf has three `ccr-…` branches from cloud
+  sessions, each 0 commits ahead of `main`: landed, never deleted.
+- **63 open PRs** across the account, most of them Dependabot bumps from
+  2022 and 2023 in repos not on this machine (ooer7, copper, psygallery,
+  and others).
+
+Some of the uncommitted work may be a session still at work, so nothing
+here is called abandoned by looking at it.
+
+## The rule
+
+`GUARDRAILS.md`'s _Landing a change_ part _Clearing up_ gains:
+
+- **A session leaves nothing of its own behind.** When its work stops,
+  what it made is landed, parked on a branch with a line saying what it
+  is and why it stopped, or removed on the user's word. That covers its
+  commits, branches, worktree, stashes and PRs. What it found of anyone
+  else's is reported, not touched.
+
+## The skill: `tidy`
+
+Asked for by name, for one project, or with a folder, for every git
+project in it. It names no harness, and finds work by what it leaves in
+git and at the remote, not by asking a harness about its sessions, so a
+cloud session's work is found as the branch or PR it pushed.
+
+1. **Fetch,** with `--prune`, and read the remote's default branch, as
+   the land skill does.
+2. **Find,** read only, and in each place:
+   - **the checkout:** uncommitted changes, files not tracked or ignored,
+     stashes, commits on the default branch not pushed, a detached HEAD
+   - **local branches:** merged, not merged, and how far ahead and behind
+   - **worktrees:** each one's branch, whether it is clean, whether it is
+     merged, and whether git has marked it prunable or locked
+   - **the remote:** branches merged and not deleted, branches with
+     commits not on the default branch (a cloud session's, a PR's), and
+     open PRs with their age, author and whether CI is green
+3. **Say what each is,** in a table, as one of:
+   - **merged:** everything in it is on the default branch. This is
+     judged by ancestry, and, for a branch that was squashed or rebased in,
+     by the PR that merged it or by `git cherry` finding each commit's
+     patch upstream. A name is never enough.
+   - **unmerged:** it has commits that are nowhere else.
+   - **uncommitted:** changes in a working tree.
+   - **stale:** an open PR or branch untouched for longer than the
+     project's threshold.
+   - **in use:** a worktree that is locked, or a tree changed within the
+     last hour. It may be a session still at work, and is left alone and
+     said.
+4. **Stop, and put it to the user,** grouped, with a recommendation for
+   each:
+   - merged, local or remote: delete
+   - unmerged: land it (the land skill), park it, or drop it
+   - uncommitted: park it, or leave it
+   - stale PRs: close, with a comment saying why, or keep
+   - in use: leave
+5. **Act on each yes, and nothing else.**
+   - To delete, check again that the thing is merged.
+   - To park, commit on a new branch named `parked/<date>-<what>`, with a
+     message saying what it is and why it stopped, and push it only on
+     the user's word.
+   - Never delete, drop or discard unmerged or uncommitted work without
+     the user's word for that item: a word for a group covers only
+     what is merged.
+6. **Report** what was found, what was done, and what is left, and why.
+
+Across a folder of projects, steps 1 to 3 run for each and the report is
+one table. Acting is done one project at a time.
+
+## What else changes
+
+- **`checks/landing.md`'s** _Nothing merged is left lying about_ grows to
+  _Nothing is left lying about_. It points to the tidy skill, and its
+  smallest form is the skill's read-only find.
+- **The land skill's** _Clear up_ ends by running tidy's find on what it
+  landed.
+- **The commit skill** notices, before committing, a stash or a parked
+  branch that looks like the same work.
+- **The project file's _How a change lands_** gains the stale threshold,
+  30 days by default, asked at install with the other two.
+
+## Out of scope
+
+- Acting on what the survey above found, in any project. That is tidy's
+  first real use, on the user's word, a project at a time.
+- Seeing a session itself: whether it is running, in which harness, on
+  which machine. That is the harness's, not in git, and the skill says so
+  when it judges a tree _in use_ from its age.
+- PRs in repos with no checkout here. They are listed, with their URL,
+  and closing them is the user's, since the repo is not here to check
+  them against.
+
+## Parts
+
+- [x] **1. Tests first.** These cover four things:
+      - The rule is under _Clearing up_, and the skill is in the skills
+        list and passes the skills tests.
+      - The tidy skill says each of the five kinds, says "never by name",
+        and says "only on the user's word" in its acting step.
+      - `landing.md` points at tidy.
+      - The template and `INSTALL.md` ask the stale threshold.
+
+      *Check:* each is seen failing first.
+- [x] **2. A fixture for the skill's judgement.** A script under `tests/`
+      builds a throwaway repo, with a bare remote, holding one of every
+      kind: a merged branch, a squash-merged branch, an unmerged branch,
+      a stash, uncommitted changes, a clean merged worktree, a locked
+      worktree, a remote branch merged and one not. Tests hold that each
+      is what it is. The skill is words, so the fixture is what the trial
+      runs it against, and it is what holds the trial to the right
+      answer. *Check:* the fixture's own tests, each seen failing on a
+      fixture built wrong on purpose.
+- [x] **3. The rule, the skill, `landing.md`, the land and commit
+      skills, the template, `INSTALL.md`.** *Check:* tests green, every
+      new test mutation-checked.
+- [x] **4. Trial,** by agents on the cheaper model:
+      - tidy run on the fixture: every item called what it is, the
+        squash-merged branch called merged, the locked worktree called
+        in use, and nothing done before the user's word
+      - then told yes to deleting what is merged, and no to the rest:
+        only the merged things are gone, which the fixture's tests then
+        check
+      - tidy's find, read only, across `~/projects`, giving the table, so
+        the user sees what the skill would put to them, and nothing acted
+        on
+
+      *Check:* the fixture after each run, and each project's
+      `git status` unchanged after the read-only run.
+- [x] **5. Release `v0.6.0`.** The commit, the tag and the pushes, each
+      only on the user's word.
+
+## Decided, and changed while building
+
+All four recommendations, by the user, 2026-10-17. While building, `git
+cherry` turned out not to see a branch of two commits squashed into one:
+it called both missing. The skill judges such a branch by whether merging
+it would change nothing (`git merge-tree --write-tree` against the default
+branch's tree, git 2.38 on), which the fixture holds.
+
+## Open for the user (as written; answered above)
+
+- **The name.** The recommendation is `tidy`. `sweep` and `leftovers`
+  are the others considered.
+- **Parking.** The recommendation is that uncommitted work may be parked
+  on a `parked/` branch, on the user's word, so that nothing has to be
+  thrown away to be tidied. The alternative is that tidy only reports
+  uncommitted work and never commits it.
+- **The stale threshold:** 30 days by default.
+- **The old bot PRs** in repos not on this machine. The recommendation is
+  that tidy lists them and leaves them, since closing them is better done
+  in the repo, or with the repo archived.
+
+## What plan 7's trial found
+
+Run 2026-10-17 by two agents.
+
+- **On the fixture,** round 1 named all nine things rightly. That
+  includes `squashed`, merged by its tree when ancestry said no,
+  `origin/landed`, merged, `origin/cloud` and `unmerged`, unmerged, and
+  `wt-locked`, in use. It stopped as the skill says. Round 2, deleting
+  what is merged on the trial user's yes, was stopped by auto mode's check
+  on destructive git commands before anything ran. The agent did not try
+  to get round it, and the fixture was unchanged. Round 2 was then run
+  here on the user's own yes, as the skill says, after fetching and
+  checking again. Gone: the worktree `wt-done` (first), the branches
+  `wt-done`, `merged` and `squashed` (`-D`, merged by its tree), and
+  `landed` on the remote. Kept, each checked: `unmerged`, `origin/cloud`
+  on the remote, the locked worktree with its change, the stash, and the
+  uncommitted change.
+- **Across `~/projects`, read only** (no fetch, no merge-tree), it found:
+  - 224 uncommitted files in 19 checkouts, and 18 in 4 dirty worktrees
+  - 2 unpushed commits (shump, testgen)
+  - 20 local branches, 4 of them not merged by ancestry (bearing,
+    humanity, wordgame, slots2)
+  - 9 worktrees
+  - 7 GitHub branches besides the default, 6 of them merged (ooergolf's
+    three `ccr-…` among them), and 12 local remote refs whose branches
+    are gone from GitHub
+  - 4 projects with no remote, so not backed up (wps, catapult-game,
+    snapper, slots2D)
+  - 63 open PRs, all in 5 repos with no checkout here: copper 24,
+    psygallery 18, pagehammer 9, narrator 7, ooer7 5
+
+  Every project's status and refs were fingerprinted before and after.
+  All were unchanged but ooerfish, where `src/lake.ts` changed at
+  17:32:33, after the run and seconds before it was looked at. ooerfish
+  has a worktree in another Claude session's scratchpad: another session
+  is at work there. That is what _in use_ is for, and it was left alone.
+- **Changed because of it.** In the skill:
+  - the default branch is read with `git ls-remote --symref` where
+    `origin/HEAD` is unset
+  - a project with no remote is said to be backed up nowhere
+  - the host's repo name comes from the remote's URL
+  - a read-only run is defined: no fetch and no merge-tree, with
+    "not merged by ancestry" said for what only the tree could clear
+  - _in use_ means files with uncommitted changes in the last hour, never
+    a checkout's age, and takes the branch of a worktree in use with it
+  - worktrees may be anywhere, and a detached one is judged by its commit
+  - _stale_ is measured from a branch's newest commit or a PR's last
+    update
+  - deleting fetches and checks again first, and removes a worktree
+    before its branch
+  - the table's columns are named
+

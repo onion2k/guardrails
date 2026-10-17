@@ -15,9 +15,10 @@ are still there to be confused with work in hand.
   remote protects it, its required status checks include the full check,
   run in CI ([verification.md](verification.md)), so a PR cannot merge
   red. Protection that asks for a PR and no checks asks for a ritual.
-- **Nothing merged is left lying about.** A branch, local or remote,
-  whose commits are all on the default branch is cleared, and a script
-  lists any that are not.
+- **Nothing is left lying about.** A branch, local or remote, whose work
+  is all on the default branch is cleared, and nothing unmerged,
+  uncommitted or stashed is left without a word saying why. The tidy
+  skill finds all of it, wherever it was made, and its find (steps 1 to 3) is this check's survey.
 
 What it does not hold: the house voice of a message, what a PR says, or
 whether the user's word was given. Those are said in the rules and the

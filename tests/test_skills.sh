@@ -1,7 +1,7 @@
 # The skills: loadable by every harness that reads the Agent Skills format,
 # and saying nothing only one harness, one model or one project would know.
 
-SKILLS=(bug commit feature gate-moved guardrails land)
+SKILLS=(bug commit feature gate-moved guardrails land tidy)
 
 # Words that belong to one harness, one vendor or one model. A skill or a
 # rule that uses one works in that harness and reads as noise in the rest.

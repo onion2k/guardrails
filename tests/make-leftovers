@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+# A project with one of everything work leaves behind, for the tidy skill
+# to be tried against, and for its tests to hold it to the right answer.
+#
+#   tests/make-leftovers <empty folder>
+#
+# Writes <folder>/remote.git, a bare remote, and <folder>/work, a clone of
+# it holding, by name:
+#
+#   merged          a local branch merged into main
+#   squashed        a local branch of two commits, squashed into main
+#   unmerged        a local branch with a commit found nowhere else
+#   a stash, and an uncommitted change to a tracked file
+#   wt-done         a clean worktree on a branch merged into main
+#   wt-locked       a locked worktree, with a change in it
+#   origin/landed   a remote branch merged into main, never deleted
+#   origin/cloud    a remote branch with a commit not on main, as a cloud
+#                   session leaves one
+#
+# FIXTURE_BREAK=<name> builds that one wrong, so that the tests holding the
+# fixture can be seen to fail.
+set -euo pipefail
+
+root="$1"
+[[ -d "$root" && -z "$(ls -A "$root")" ]] || { echo "make-leftovers: give an empty folder" >&2; exit 1; }
+break_="${FIXTURE_BREAK:-}"
+
+git init -q --bare -b main "$root/remote.git"
+git clone -q "$root/remote.git" "$root/work" 2>/dev/null
+cd "$root/work"
+git config user.email fixture@example.invalid
+git config user.name fixture
+git config commit.gpgsign false
+
+commit() { echo "$2" >>"$1"; git add "$1"; git commit -qm "$3"; }
+
+commit readme.txt start "Start the fixture."
+git push -q origin main
+
+# merged: a branch merged into main with a merge commit.
+git checkout -qb merged
+commit merged.txt one "Add the merged work."
+git checkout -q main
+git merge -q --no-ff merged -m "Merge the merged branch."
+
+# squashed: two commits, squashed into one on main.
+git checkout -qb squashed
+commit squashed.txt one "Add the squashed work, part one."
+commit squashed.txt two "Add the squashed work, part two."
+git checkout -q main
+git merge -q --squash squashed >/dev/null
+git commit -qm "Squash the squashed branch."
+if [[ "$break_" == squashed ]]; then
+  git checkout -q squashed
+  commit squashed.txt three "Add a part the squash never had."
+  git checkout -q main
+fi
+
+# unmerged: a commit found nowhere else.
+git checkout -qb unmerged
+commit unmerged.txt one "Add work that never landed."
+git checkout -q main
+[[ "$break_" == unmerged ]] && git merge -q --no-ff unmerged -m "Merge the unmerged branch."
+
+# The remote's branches: one landed and left, one a cloud session's.
+git checkout -qb landed
+commit landed.txt one "Add work that landed through the remote."
+git push -q origin landed
+git checkout -q main
+git merge -q --no-ff landed -m "Merge the landed branch."
+git branch -qD landed
+
+git checkout -qb cloud
+commit cloud.txt one "Add a cloud session's work."
+git push -q origin cloud
+git checkout -q main
+git branch -qD cloud
+[[ "$break_" == cloud ]] && { git merge -q --no-ff origin/cloud -m "Merge the cloud branch."; }
+
+git push -q origin main
+
+# Worktrees: one clean on merged work, one locked with a change.
+git branch -q wt-done merged
+git worktree add -q "$root/wt-done" wt-done
+git checkout -qb wt-locked
+git checkout -q main
+git worktree add -q "$root/wt-locked" wt-locked
+echo "half done" >>"$root/wt-locked/readme.txt"
+[[ "$break_" == locked ]] || git worktree lock "$root/wt-locked" --reason "a session at work"
+
+# A stash, then a change left uncommitted.
+echo "stashed" >>readme.txt
+git stash -q
+[[ "$break_" == uncommitted ]] || echo "not yet committed" >>readme.txt
+exit 0

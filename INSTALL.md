@@ -52,13 +52,14 @@ This holds for an update as much as for an install.
    project file has no answers yet; a bracketed default is no answer.
    Since an update never writes the project file, the answers are given
    to the user as the lines to add.
-5. **How a change lands,** the two questions at the end of
+5. **How a change lands,** the three questions at the end of
    `guardrails/GUARDRAILS.md`'s _Landing a change_, asked as they are
    written there, each with its recommendation:
    - the **merge style**: a merge commit, squash, or rebase
    - **what an agent may do without asking**: nothing, or push and open
      PRs. A yes is a grant, recorded with who gave it and the date.
      Merging and tagging are asked each time, whatever the answer.
+   - the **stale threshold**: 30 days, or the project's own
 
    On an update, these are asked only where the project file has no
    answers to them yet.
@@ -120,8 +121,9 @@ Where the project has no `guardrails/` folder.
    questions in _Before anything_, each bracketed default replaced by the
    answer in plain words: under _Gates_, the audit threshold and the
    allowed licences; under _Commands_, how updates arrive; and under _How
-   a change lands_, the merge style and what an agent may do without
-   asking, with the grant's who and date where there is one.
+   a change lands_, the merge style, what an agent may do without asking,
+   with the grant's who and date where there is one, and the stale
+   threshold.
 
    These are the project's from then on, and an update never touches
    them.

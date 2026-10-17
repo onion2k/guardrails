@@ -98,6 +98,7 @@ project's answers:
 
 - **Merge style:** [a merge commit]
 - **What an agent may do without asking:** [nothing]
+- **Stale after:** [30 days]
 
 Whether a change goes straight to the default branch or by PR is the
 remote's to say, by protecting the branch or not, and is read from it
