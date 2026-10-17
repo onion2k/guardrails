@@ -57,7 +57,8 @@ tag is made in a temporary folder, outside the project:
     git clone --depth 1 --branch <tag> https://github.com/onion2k/guardrails.git <temporary folder>
 
 Where the user names a local copy of the kit instead, that copy is used
-the same way, without `--depth`, which git ignores for a local path. It
+the same way: its tags are listed by `git ls-remote --tags <path>`, and it
+is cloned without `--depth`, which git ignores for a local path. It
 is used at the tag the user names, or at its newest; where it has no tags,
 at its commit, and the version recorded is then the commit's hash, got
 again later with `git checkout <hash>` in a fresh clone.
@@ -182,7 +183,8 @@ compared: it is the agent's.
    and the newer one, in the files the project has: the rules, the checks,
    and the skills the record lists as the kit's. A skill new in the newer
    kit is listed as one that would be added, unless the project has a
-   folder of that name, which stays its own. Where the templates have
+   folder of that name, which stays its own. A skill in two folders is
+   shown once, and said to be in both. Where the templates have
    changed, show that too, as something the user may take into the files
    made from them; those are the project's, and are not written.
 3. **Wait for the user's yes.** Without it nothing is written.
@@ -190,7 +192,9 @@ compared: it is the agent's.
    with the newer kit's, byte for byte; remove a check or a skill the
    newer kit no longer has; add the new ones. The project's own files and
    folders are not touched. Update `guardrails/INSTALLED.md` to the newer
-   version, and its lists as _Installing_ says they are made. Check the
+   version, and its lists made again from what is now there, as
+   _Installing_ says; where nothing was added or removed, they stay as
+   they were. Check the
    copy, as _Installing_ says.
 5. **Report** what changed, by file, whether the copy was checked, and
    that nothing is committed.

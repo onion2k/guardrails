@@ -21,6 +21,8 @@ file a tool holds it in.
     [quick check]          formatting, types, lint, unit tests (the pre-commit hook; ~N s)
     [full check]           all of it: the quick check, then every gate (~N s)
     [each gate]            [what it holds the project to]
+    [format]               the formatter, writing: by hand, never by the hook
+    [CI]                   [where the full check runs besides this machine, and on what]
 
 [Which command writes each baseline again. Only for a change meant to move
 it, and the commit says why.]

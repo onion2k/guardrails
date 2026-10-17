@@ -62,7 +62,8 @@ holds it: copied into the file, it is soon wrong.
   service, the clock is handed in, and a test holds it.
 - **No tight coupling.** A module takes what it needs as arguments or
   options. It does not import state, and lower modules do not import
-  content. One place wires everything together. Machinery two projects need
+  content. One place wires everything together. What a tool can read of
+  this in the imports is held by [checks/structure.md](checks/structure.md). Machinery two projects need
   becomes a package of its own, taken in with a version bump, and one
   module is a project's side of it.
 - **Each thing is said once.** A colour, a size, a limit or a sum lives in
@@ -94,8 +95,10 @@ holds it: copied into the file, it is soon wrong.
   without it.
 - Names are plain. A thing is called what a user, or a reader, would call
   it.
-- The formatter decides the formatting. Lint is for mistakes, not style,
-  and the type-aware rules are the point.
+- The formatter decides the formatting, and is held by
+  [checks/formatting.md](checks/formatting.md). Lint is for mistakes, not
+  style, and the type-aware rules are the point: held by
+  [checks/lint.md](checks/lint.md).
 
 ## Before building
 
@@ -155,21 +158,28 @@ What the definition of done leans on, each in `checks/`, in about the order
 a project takes them on. A check is added one at a time, and trusted once
 it has been seen to fail what it is for.
 
-| Check                                          | What it holds                                          |
-| ---------------------------------------------- | ------------------------------------------------------ |
-| [quick check](checks/quick-check.md)           | format, types, lint, unit tests; run before a commit   |
-| [unit](checks/unit.md)                         | the thing's working parts, headless and seeded         |
-| [test API](checks/test-api.md)                 | a scene set, time stepped, state read back; end to end |
-| [invariants](checks/invariants.md)             | what must always be true, however it got there         |
-| [fuzzer](checks/fuzzer.md)                     | what a user can do, done at random, rules checked      |
-| [determinism](checks/determinism.md)           | the same seed giving the same run                      |
-| [persisted shapes](checks/persisted-shapes.md) | every shape ever saved, still loading                  |
-| [bounded](checks/bounded.md)                   | what is kept staying under its ceiling                 |
-| [gates](checks/gates.md)                       | a figure held to a budget and a baseline, both ways    |
-| [look](checks/look.md)                         | what the user sees, held to pictures looked at         |
-| [mutation](checks/mutation.md)                 | a test seen to fail when its bug is put back           |
+| Check                                          | What it holds                                                       |
+| ---------------------------------------------- | ------------------------------------------------------------------- |
+| [quick check](checks/quick-check.md)           | what runs before a commit, and in what order                        |
+| [formatting](checks/formatting.md)             | one formatter deciding every file it should                         |
+| [lint](checks/lint.md)                         | mistakes the compiler lets through, and the rules a linter can hold |
+| [structure](checks/structure.md)               | what may import what                                                |
+| [unit](checks/unit.md)                         | the thing's working parts, headless and seeded                      |
+| [test API](checks/test-api.md)                 | a scene set, time stepped, state read back; end to end              |
+| [invariants](checks/invariants.md)             | what must always be true, however it got there                      |
+| [fuzzer](checks/fuzzer.md)                     | what a user can do, done at random, rules checked                   |
+| [determinism](checks/determinism.md)           | the same seed giving the same run                                   |
+| [persisted shapes](checks/persisted-shapes.md) | every shape ever saved, still loading                               |
+| [bounded](checks/bounded.md)                   | what is kept staying under its ceiling                              |
+| [gates](checks/gates.md)                       | a figure held to a budget and a baseline, both ways                 |
+| [look](checks/look.md)                         | what the user sees, held to pictures looked at                      |
+| [verification](checks/verification.md)         | that each check reaches what it says it does                        |
+| [mutation](checks/mutation.md)                 | a test seen to fail when its bug is put back                        |
 
 ## Verifying
+
+How a project is held to these, check by check, is in
+[checks/verification.md](checks/verification.md).
 
 - **Evidence, not belief.** Keep the numbers and the file paths for the
   report. A run that was not read is not a check. What may have changed

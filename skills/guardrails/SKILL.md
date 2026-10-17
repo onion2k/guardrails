@@ -70,6 +70,9 @@ Go through every file in `guardrails/checks/`, in the order of the table in
 - **cannot apply:** why, and what stands in, from the check's own
   _Where it cannot apply_.
 
+A rule held only by words, in the project file or elsewhere, and by no
+tool, is _missing_: words are what the check is there to replace.
+
 Where nothing records a check failing a fault put in on purpose, it was
 never seen to fail, and is _untested_: a project that has every check will
 mostly come out that way, and its plan is mostly proving, not adding.
@@ -84,11 +87,16 @@ is called a fault.
 
 Show the user a table of it, with the order you would add the missing ones
 in and why, and what each will add to the full check in seconds: measured, for a
-check that is there, and an estimate called one for a check that is not. The order is usually the table's: the quick check and
-its hook first, since every later check lands through it, then unit tests
-and the seeded source, the test API, the invariants, the fuzzer, and the
-rest. A project with a known fault takes the check that would have caught
-it early.
+check that is there and could be run, and an estimate called one for the
+rest.
+
+The order is usually the table's. The quick check and its hook come first,
+with the formatter and lint in it, since every later check lands through
+it; then the structure rules, unit tests and the seeded source, the test
+API, the invariants, the fuzzer, and the rest. Verification comes once
+there is a full check to run, and somewhere other than this machine to run
+it. A project with a known fault takes the check that would have caught it
+early.
 
 Write the order as a plan in a file the project file points to: one box a
 check, the check that proves each beside it. Then stop, and wait for the

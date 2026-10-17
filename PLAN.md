@@ -339,3 +339,176 @@ Part 2's tag is on `42fe0b2`, which has the untrialled `INSTALL.md`. It
 is not pushed, so it can be moved to the commit with these changes
 without anyone having seen it; that is the user's call.
 
+
+---
+
+# Plan 3: standards held by checks, not only said
+
+Written 2026-10-17, on `523d208` (`v0.1.0`). Nothing is built until the
+user says go.
+
+## Aim
+
+The kit says how code is written (Structure and Style in
+`GUARDRAILS.md`) but holds only tests to a gate. A standard that nothing
+enforces is advice, and it drifts: ooergolf's rules say chance comes from
+one source, `src/game.ts:311` falls back to `Math.random`, and no lint
+rule says so. This plan gives formatting, linting, structure and
+verification a check file each, so the `guardrails` skill surveys them
+and a project is taken up them like the rest, each seen failing.
+
+Done looks like this: four new check files, in the same four sections as
+the rest. `quick-check.md` and `GUARDRAILS.md` point at them and do not
+repeat them. The kit's tests are green. A trial shows the `guardrails`
+skill surveying the new checks on a real project and finding what they
+are for. Released as `v0.2.0`, an update from `v0.1.0` that the trial
+also tries.
+
+## The new checks
+
+Each has the four sections every check has: _What it holds_, _Its
+smallest form_ (a TypeScript example, as the others have), _Seen failing_,
+and _Where it cannot apply_. Each names what stands in for Python, Rust
+and Go too, since these checks are where languages differ most. The tool
+names in the examples are looked up when they are written, not recalled:
+that each exists, is current, and does what is said.
+
+- **`checks/formatting.md`.** One formatter decides everything, and is
+  never argued with. It is run as a check in the hook, and as a write by
+  hand, never by the hook. It leaves generated, vendored and kit files
+  alone through its ignore file (`guardrails/` among them: the kit's own
+  trial found that one). _Seen failing:_ a file put out of format fails
+  the hook. _Stands in:_ ruff format or black, rustfmt, gofmt.
+- **`checks/lint.md`.** Lint is for mistakes, not style; the formatter has
+  style. The type-aware rules are turned on: a promise not awaited, an
+  unsafe `any`, a condition that is always true. The rules the project
+  states that a linter can hold are held by it: no global random in the
+  thing's code, no `console` left in, nothing disabled without a comment
+  saying why. A rule is added with a planted violation that it is seen to
+  fail. _Stands in:_ ruff and mypy or pyright, clippy, golangci-lint.
+- **`checks/structure.md`.** The structure rules held by a tool that reads
+  imports: the thing does not import its picture, lower modules do not
+  import content, one place wires everything, and nothing imports in a
+  circle. Each rule is a line in the tool's config with the reason beside
+  it, and is seen to fail on a planted import. It runs in the quick check
+  where it is fast enough, otherwise in the full check. _Stands in:_
+  import-linter, cargo's crate boundaries, Go's `internal/`.
+- **`checks/verification.md`.** What a check must reach to be believed:
+  the built thing and not the dev server, the code as changed (no stale
+  build, cached bytecode or pin not installed), a count of what it
+  reached, so that one that found nothing fails, and the full check run
+  somewhere other than the author's machine, on every push to main. It
+  gathers what `GUARDRAILS.md`'s Verifying section says into one check a
+  project can be surveyed against. _Seen failing:_ a stale build served
+  to the end-to-end test is caught; a test file that matches no tests
+  fails the run; CI fails on a red gate. _Stands in:_ any CI; for a
+  project with none, a second machine or a clean clone, said under _What
+  is not held_.
+
+## What else changes
+
+- **`checks/quick-check.md`** says what runs before a commit and in what
+  order, pointing at `formatting.md` and `lint.md` for what each holds,
+  and no longer says it itself. Its _Seen failing_ keeps the hook's own
+  case: a commit refused through `git commit`.
+- **`GUARDRAILS.md`:** the table gains the four rows, in the order a
+  project takes them on: quick check, formatting, lint, structure, unit,
+  and so on, with verification last but one, before mutation. In Style,
+  the formatting and lint line, and in Structure, the rules
+  `structure.md` holds, each point to their check, so a rule is said in
+  one place and held in another. Verifying keeps its rules and gains a
+  line pointing to `verification.md` for how a project is held to them.
+- **`skills/guardrails/SKILL.md`:** the survey's usual order names the
+  new checks: formatting and lint with the quick check, structure after
+  unit tests, verification once there is a full check to run.
+- **`templates/AGENTS.md`:** under _Commands_, a line for the formatter's
+  write and one for CI, where there is one.
+- **`README.md`:** the releases table gains `v0.2.0`, and the layout
+  listing is checked.
+
+## Out of scope
+
+- Writing any project's lint, formatter, structure or CI config. That is
+  the `guardrails` skill's, in the project, one check at a time.
+- Naming conventions and other matters of taste beyond what Style says.
+  They belong in a project's own `AGENTS.md`.
+- Security and dependency checks (audit, secrets, licences). They are
+  worth a check each, and a plan of their own.
+
+## Parts
+
+- [x] **1. Tests first.** These cover four things:
+      - `quick-check.md` links to `formatting.md` and `lint.md`.
+      - `GUARDRAILS.md`'s Style section links to `formatting.md` and
+        `lint.md`, its Structure section to `structure.md`, and its
+        Verifying section to `verification.md`.
+      - `quick-check.md` no longer names a formatter's or a linter's rules
+        itself: no "type-aware" and no "promise". This holds "said once".
+      - The table's order is the one above.
+
+      The existing tests already hold each new file to the four sections
+      and to being in the table, and to naming no harness. *Check:* each
+      new test is seen failing against the kit as it stands.
+- [x] **2. Look up the tools.** For each tool the examples name, its
+      current docs: that it exists, its current major version, and the
+      config shown. Each is noted in the file it is used in, with the date.
+      *Check:* each name in the four files has a source in the commit
+      message.
+- [x] **3. The four check files,** and `quick-check.md` cut down.
+      *Check:* `tests/run` green, the format test included.
+- [x] **4. `GUARDRAILS.md`, the skill, the template, the README.** *Check:*
+      `tests/run` green, every new test mutation-checked.
+- [x] **5. Trial, two ways,** by agents on the cheaper model, in
+      throwaway clones, against a throwaway kit tagged `v0.2.0`:
+      - In ooergolf, the `guardrails` skill's phases 1 to 3. The survey
+        should find lint _held, needs work_ for the `Math.random`
+        fallback. It should report on structure and verification, and give
+        each new check a status the agent can back with a file and line.
+      - In a sysmod clone with `v0.1.0` installed, an update to `v0.2.0`.
+        The diff should show the four new checks as added and
+        `quick-check.md` as changed, with the project's own files
+        untouched.
+
+      *Check:* each clone read here against what the files say should
+      happen; what the agents had to guess is fixed and recorded.
+- [x] **6. Release.** A commit, and the tag `v0.2.0` on it, both only on
+      the user's word, and pushed only on the user's word.
+
+## Open for the user
+
+None. The one judgement call, leaving security and dependencies to a plan
+of their own, is under _Out of scope_ and can be argued with there.
+
+## What plan 3's trial found
+
+Run 2026-10-17 by two agents on the cheaper model, against a throwaway kit
+with the real `v0.1.0` and this work tagged `v0.2.0`; each clone checked
+here afterwards.
+
+- **The update held.** A sysmod clone given `v0.1.0` was updated to
+  `v0.2.0`: the diff showed the four new checks added, and the rules,
+  `quick-check.md` and the guardrails skill changed, and the template's
+  two new lines shown and not written. The clone matched `v0.2.0` byte for
+  byte, and no tracked file changed.
+- **The survey found what the checks are for.** In ooergolf, lint came out
+  _partly_: no rule on `Math.random`, so `src/game.ts:311`'s fallback
+  stands, and two `console.error` lines in `src/main.ts` (214, 601) that
+  `no-console` would ask a reason of. Structure came out _missing_: its
+  rules are words in `CLAUDE.md` only. Verification came out _partly_:
+  no CI, and `playwright.config.ts` starts the dev server, `npx vite`, for
+  the end-to-end tests. Formatting came out _held, untested_, with
+  `guardrails/` and `.agents/` not yet in `.prettierignore`. Each was
+  checked here against the project.
+- **Changed because of it:** a default that reaches for the global random
+  is the rule broken, not an exception, and an exception is a line with a
+  reason; a project on an older ESLint keeps its config's shape; the
+  worktree to ignore is wherever the harness keeps them; "one side of a
+  package" is for machinery the project wraps, not a renderer used as it
+  is (ooergolf imports `artshape-render` in 29 files); type-only imports
+  are the project's call, said in the rule; the rules' paths come from the
+  project file's _Layout_; end-to-end tests on the dev server fall short;
+  the GPU-bound gates are the ones _Gates_ names; the CI example uses
+  `lts/*`, not a pinned Node; a rule held only by words is _missing_; and
+  in `INSTALL.md`, how a local copy's tags are listed, that a skill in two
+  folders is shown once, and when the record's lists are made again.
+

@@ -142,9 +142,10 @@ Each release is a git tag, `v0.1.0` and on. `INSTALL.md` installs the
 newest, and an update compares the project's files with the kit at the tag
 it has, which is how a hand edit is told from the kit's own.
 
-| Tag      | What changed                                                                   |
-| -------- | ------------------------------------------------------------------------------ |
-| `v0.1.0` | The first: the rules, eleven checks, five skills, installed by an agent alone. |
+| Tag      | What changed                                                                                         |
+| -------- | ---------------------------------------------------------------------------------------------------- |
+| `v0.1.0` | The first: the rules, eleven checks, five skills, installed by an agent alone.                       |
+| `v0.2.0` | Formatting, lint, structure and verification as checks of their own; the quick check points at them. |
 
 ## Left out on purpose
 
