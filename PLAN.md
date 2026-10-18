@@ -1833,7 +1833,7 @@ the hook with a gitleaks line, which the template does not yet have.
 
 # Plan 10: plans kept in the project, and where every piece of work stands
 
-State: building, part 7 of 7.
+State: landed on main at 7db1d00, 2026-10-18.
 
 Written 2026-10-18, on `facdfe1` (`v0.8.0` and one tick), on the strongest
 model to hand, in plan mode. Agreed on 2026-10-18 as written, under
@@ -2293,7 +2293,7 @@ something true, which is part 6's first check.
       _Check:_ the figures and the screens kept for "What plan 10's trial
       found", and every throwaway folder deleted.
 
-- [ ] **7. Release `v0.9.0`.** The commit, the tag and the pushes, each
+- [x] **7. Release `v0.9.0`.** The commit, the tag and the pushes, each
       only on the user's word; then the tick commit that sets plan 10's
       line to landed.
 
