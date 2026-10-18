@@ -76,9 +76,14 @@ Write a short spec and show it. Keep it under a screen.
   - for a tool: the gate, its baseline, and how a change to it is told
     from noise
 - **Parts:** a checklist, one box a part in the order they will be built,
-  with the check that proves each beside it, kept in a file. A box is
-  ticked in phase 3 as its part's tests go green, so where the work stands
-  can be read off the file at any time.
+  with the check that proves each beside it. The moment the spec is
+  agreed it is copied to `plans/<name>.md`, named for the work, with the
+  line under its title saying agreed and the date, in the form
+  `guardrails/checks/plans.md` gives. Where the harness has a plan mode,
+  the spec is written there first and copied in when agreed, and the copy
+  is the one ticked. A box is ticked in phase 3 as its part's tests go
+  green, and the line moved with it, so where the work stands can be read
+  off the file at any time.
 
 Ask the user to agree the spec or change it, and ask only about real
 decisions. Nothing is built before the agreement.
@@ -99,7 +104,8 @@ decisions. Nothing is built before the agreement.
 4. Add the fuzzer action: only what a user could do. Add any new
    always-true rule to the invariants. Give anything the feature keeps a
    ceiling where the project watches sizes.
-5. Make the tests pass, and tick the part's box.
+5. Make the tests pass, tick the part's box in `plans/<name>.md`, and
+   move its state line to the next part.
 
 A tool is code like any other: its own working parts get their own unit
 tests, not just the end-to-end run. A bug in the middle of a tool does not
@@ -174,7 +180,8 @@ Lead with the outcome, then the definition of done point by point:
 
 - **Result:** what was built, in one or two sentences.
 - **Acceptance criteria:** each one, and the test that proves it.
-- **Parts:** which boxes are ticked, and why any is not.
+- **Parts:** which boxes are ticked in `plans/<name>.md`, and why any is
+  not.
 - **Checks:** results with numbers: tests, fuzz seeds and steps, each
   gate, costs before and after.
 - **What the numbers show,** for a tool: what it says about the project
@@ -186,3 +193,5 @@ Lead with the outcome, then the definition of done point by point:
 - **The project file:** anything added to it so the next feature finds
   its nouns.
 - **Uncommitted:** nothing is committed until asked.
+- **Next:** the next step in a line, with the plan's state line moved
+  first, so that the file and the chat say the same.

@@ -92,9 +92,11 @@ deleted, whatever happened, a refusal included.
 Where the project has no `guardrails/` folder.
 
 1. **The rules.** Copy the kit's `GUARDRAILS.md` to
-   `guardrails/GUARDRAILS.md`, and its `checks/` to `guardrails/checks/`,
-   file for file, byte for byte. Nothing in them is changed, formatted or
-   wrapped: an update tells a hand edit from the kit by comparing bytes.
+   `guardrails/GUARDRAILS.md`, its `checks/` to `guardrails/checks/`, and
+   its `next` to `guardrails/next`, file for file, byte for byte, the
+   script made executable where the system has such a thing. Nothing in
+   them is changed, formatted or wrapped: an update tells a hand edit from
+   the kit by comparing bytes.
 2. **The skills.** For each skill folder in the kit's `skills/`, and for
    each skills folder the chosen harnesses read (`.agents/skills/`,
    `.claude/skills/`, or both):
@@ -126,7 +128,8 @@ Where the project has no `guardrails/` folder.
    threshold.
 
    These are the project's from then on, and an update never touches
-   them.
+   them. Nothing is written in `plans/`, where the project's plans go: the
+   first plan kept there makes it, as `guardrails/checks/plans.md` says.
 
 4. **The record.** Write `guardrails/INSTALLED.md`, in this shape:
 
@@ -154,7 +157,9 @@ Where the project has no `guardrails/` folder.
 5. **Check the copy.** Before the temporary folder goes, compare every
    file written with the kit's, byte for byte, and every template written
    with its template. A difference is put right and said; a copy that was
-   not checked is said to be unchecked.
+   not checked is said to be unchecked. The script and the hooks are
+   checked to be executable as well, where the system has such a thing:
+   the bytes do not carry that.
 
 6. **What is left for the project,** said to the user in the report, in
    this order, each only where it applies:
@@ -172,7 +177,7 @@ Where the project has no `guardrails/` folder.
      and each heading of `templates/AGENTS.md` it lacks is listed: the
      skills look for them by name. The answers to the questions about how
      a change lands are given as the lines to add under _How a change
-     lands_.
+     lands_, and so is the `sh guardrails/next` line under _Commands_.
 
    - **A formatter.** Where the project has one (a prettier, biome or
      dprint config file at its root, or a `prettier` key in its
@@ -207,29 +212,36 @@ the kit's `skills/bug`. `guardrails/INSTALLED.md` itself is never
 compared: it is the agent's.
 
 1. **Hand edits first.** Compare, byte for byte, the project's
-   `guardrails/GUARDRAILS.md`, each file of `guardrails/checks/`, and each
-   skill folder the record lists as the kit's, with the same files in the
-   installed copy. Any difference is a hand edit, and so is a file added
-   to one of them or a file gone: see _A hand edit_. Nothing is written.
+   `guardrails/GUARDRAILS.md`, each file of `guardrails/checks/`,
+   `guardrails/next`, and each skill folder the record lists as the
+   kit's, with the same files in the installed copy. Any difference is a
+   hand edit, and so is a file added to one of them or a file gone: see
+   _A hand edit_. A file neither copy has is no difference. Nothing is
+   written.
 2. **The diff.** Show the user the difference between the installed copy
-   and the newer one, in the files the project has: the rules, the checks,
-   and the skills the record lists as the kit's. A skill new in the newer
+   and the newer one, in the files the project has or would get: the
+   rules, the checks, the script `guardrails/next`, and the skills the
+   record lists as the kit's. A skill new in the newer
    kit is listed as one that would be added, unless the project has a
    folder of that name, which stays its own. A skill in two folders is
    shown once, and said to be in both. Where the templates have
    changed, show that too, as something the user may take into the files
    made from them; those are the project's, and are not written.
 3. **Wait for the user's yes.** Without it nothing is written.
-4. **Write.** Replace the rules, the checks and the kit's skill folders
-   with the newer kit's, byte for byte; remove a check or a skill the
-   newer kit no longer has; add the new ones. The project's own files and
-   folders are not touched. Update `guardrails/INSTALLED.md` to the newer
-   version, and its lists made again from what is now there, as
+4. **Write.** Replace the rules, the checks, `guardrails/next` and the
+   kit's skill folders with the newer kit's, byte for byte, the script
+   made executable where the system has such a thing; remove a check or
+   a skill the newer kit no longer has; add the new ones. The
+   project's own files and folders are not touched. Update
+   `guardrails/INSTALLED.md` to the newer version, and its lists made
+   again from what is now there, as
    _Installing_ says; where nothing was added or removed, they stay as
    they were. Check the
    copy, as _Installing_ says.
-5. **Report** what changed, by file, whether the copy was checked, and
-   that nothing is committed.
+5. **Report** what changed, by file, whether the copy was checked, the
+   lines the project's own `AGENTS.md` lacks (the answers asked under
+   _Before anything_, and the `sh guardrails/next` line under
+   _Commands_), and that nothing is committed.
 
 ## Refusals
 

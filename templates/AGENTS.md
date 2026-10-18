@@ -25,6 +25,7 @@ file a tool holds it in.
     [mutate]               the tests' surviving mutants, per file, held to the baseline under Gates (or: no mutation tool yet)
     [audit]                the dependencies' known advisories, at the threshold under Gates
     [updates]              by hand, monthly, a commit each, the audit first
+    sh guardrails/next     where every plan in plans/ stands, and what comes next
 
 [Which command writes each baseline again. Only for a change meant to move
 it, and the commit says why.]
