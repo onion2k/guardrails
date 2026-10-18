@@ -1504,7 +1504,7 @@ project has one, with its figures kept for the report.
       *Check:* the figures, kept for `PLAN.md`'s "What plan 8's trial
       found", and the copy deleted.
 
-- [ ] **5. Release `v0.7.0`.** The commit, the tag and the pushes, each
+- [x] **5. Release `v0.7.0`.** The commit, the tag and the pushes, each
       only on the user's word.
 
 ## Open for the user
