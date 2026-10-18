@@ -36,7 +36,7 @@ A helper that builds the thing from a seed, and tests that use it:
 
 A test's timeout is there to catch one that never ends, not to time the
 thing. Set it generously and say why beside it: a timeout of a few seconds
-fails at random on a busy machine or a slow runner, and a check that fails
+fails at random on a busy or slow machine, and a check that fails
 for the machine's reasons is not believed the next time.
 
 ## Seen failing

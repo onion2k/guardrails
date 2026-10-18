@@ -1576,3 +1576,237 @@ mutation-checked; nothing was run on Windows; the full `npm run check` of
 the copy was not run with the new scripts in it. Adding the gate to the
 template itself is the template's own change, out of scope here.
 
+
+# Plan 9: CI comes out of the kit
+
+Written 2026-10-18, on `3ecc278` (`v0.7.0`), on the strongest model to hand,
+in plan mode. Built from the answers under _Decided by the user_.
+
+## Aim
+
+The user said on 2026-10-18 that guardrails is for local development only,
+and that anything about CI in the kit is to come out. CI is in it in
+seven places: a check of its own (`checks/ci.md`, with a rule bullet, a
+table row, a test and a release line), five checks that assume a runner
+exists (verification's "somewhere other than here" with a workflow as its
+smallest form, dependencies' audit in CI with a workflow and a Dependabot
+file, secrets' history scan in CI, code scanning in CI with CodeQL's
+default setup, landing's protection by required status checks), and the
+landing rules and the land skill ("CI green before a PR merges", a step
+for reading what CI says), plus a `[CI]` line in the project-file template
+and a line in the guardrails skill.
+
+The aim is a kit in which every check holds in one of three places, all on
+the machine the work is done on: the hook, the full check, or a fresh
+clone before a release. Nothing in it needs a runner, a workflow, a bot or
+a host's own scanning. A project that has CI runs the same full check
+there, and that is the project's own business, said once in the README.
+
+What this gives up, said plainly in the kit: a check that passes only on
+the author's machine holds the author's machine. The fresh clone stands in
+for that, and it is weaker than a clean runner on a push: it is run when
+someone runs it. The kit says so under verification's _Where it cannot
+apply_.
+
+## The design
+
+**Taken out.** `checks/ci.md` is deleted. In `GUARDRAILS.md`, the table
+row goes; the _least that works_ rule keeps its sense (a token, a deploy
+key or a process given only what its job needs, a third-party script or
+image pinned to what was read) and loses "a workflow", "action" and the
+pointer to `checks/ci.md`. In _Landing a change_, "CI green before a PR
+merges" becomes "the full check green on the commit merged, run by whoever
+merges and said in the PR", and "with CI green" in _Merging_ becomes "with
+the full check green".
+
+**`checks/verification.md`.** The bullet _Somewhere other than here_
+becomes _From a fresh clone._ Before a release, and on the user's word at
+any time, the full check runs from a fresh clone of the commit (`git clone
+--no-local`), with the lockfile's dependencies installed clean, on this
+machine or another to hand; what passes only in the working tree (an
+untracked file, a stale build, a global install, a cached dependency)
+fails there. The smallest form replaces the workflow with the four shell
+lines of the fresh-clone run. The paragraph on gates left out of CI by
+name becomes: a gate that measures this machine's GPU or clock holds on
+this machine, and the project file's _Gates_ says which machine. _Seen
+failing_: a file the tests need left untracked, and the fresh-clone run
+seen to fail; a gate made red and seen red there. _Where it cannot apply_
+loses the no-CI bullet and gains: this is run when someone runs it, and
+a project that wants it on every push has CI of its own, outside the kit.
+
+**`checks/dependencies.md`.** "CI and every gate install from it" becomes
+"every gate, and every fresh clone, installs from it". The audit runs in
+the full check, and before each monthly update, because an advisory can be
+published against a tree that has not changed; still not in the hook, for
+the reason given. The workflow and the Dependabot file go from the
+smallest form, with the sentences on Renovate, the actions' versions, and
+a scheduled workflow stopping after 60 days. Question 3, _how updates
+arrive_, becomes: by hand, monthly, a commit each, with the audit run
+first (recommended), or on the project's own cadence; no bot. "The job"
+that checks the audit's output becomes "the script". The git+ssh bullet
+loses "CI is given one": a machine installing it needs a key, or the
+dependency resolves over HTTPS, and a fresh clone install shows which.
+
+**`checks/secrets.md`.** _Nothing in the history does_: the scanner runs
+over the whole history in the full check (seconds, for a history of
+thousands of commits), and from the fresh clone before a release. The
+host's push protection and GitHub's secret scanning go, as does the
+_host without push protection_ bullet. The smallest form's CI block
+becomes the one line `gitleaks git --redact --verbose` in the full check.
+
+**`checks/code-scanning.md`.** It runs in the full check, with rules
+fetched fresh each run, since they improve when the code has not changed;
+the bullet on reading CI workflows goes. The smallest form loses CodeQL's
+default setup and keeps semgrep, run locally (`pipx run semgrep scan
+--config auto --metrics=off --error`, or `uvx semgrep`); a finding is
+dismissed with a `# nosemgrep: <rule>` comment that says why. _Seen
+failing_: each fault planted in the working tree, seen flagged, taken out;
+the workflow case goes.
+
+**`checks/landing.md`.** The bullet _A protected default branch is
+protected by the checks_ becomes _A PR carries the full check's result_:
+the commit it ran on and what it counted, since nothing else runs it, and
+a PR without it is not merged. The paragraph on required checks in
+GitHub's settings goes, as do the _Seen failing_ line on a red PR not
+being mergeable and the _CI cannot run the full check_ bullet.
+
+**Skills.** `skills/land/SKILL.md`: the description loses "says what CI
+shows"; step 4 _What CI says_ becomes _The full check, once more_: before
+a merge, the full check is run on the branch as it will merge (merged
+with the default branch locally, in a worktree), and the result put in
+the PR; "every required check green" becomes "the full check green"; the
+report's _CI_ line becomes _The full check_: its result and the commit.
+`skills/guardrails/SKILL.md`: "any CI" goes from what is read, and
+verification "comes once there is a full check to run from a fresh
+clone".
+
+**`templates/AGENTS.md`.** The `[CI]` line goes; `[updates]` becomes "by
+hand, monthly, a commit each, the audit first".
+
+**`README.md`.** _Left out on purpose_ gains a bullet, _CI_, saying the
+above in four lines. A `v0.8.0` row in the release table. The `v0.5.0` row
+stays as history. _How a change lands on a GitHub remote_ stays: reading
+the branch's protection is how push or PR is decided, and is local work.
+
+**Tests.** `tests/test_security.sh`'s least-that-works assertion no
+longer asks for `checks/ci.md`; it asks that the rule is still there.
+`tests/test_standards.sh`'s `CHECK_ORDER` loses `ci`. A new
+`tests/test_local.sh` holds the kit to being local: no file in
+`GUARDRAILS.md`, `checks/`, `skills/`, `templates/` or `INSTALL.md`
+contains, as a word and in any case, `CI` (but `npm ci` and `pnpm ci`
+are allowed, by excluding `npm ci`), `workflow`, `workflows`,
+`Dependabot`, `Renovate`, `CodeQL`, `zizmor`, `actionlint`,
+`pull_request_target`, `GITHUB_TOKEN`, `runs-on` or `.github/`; and
+`checks/ci.md` is not there. `test_checks_are_each_named_by_the_rules`
+already fails on a check file the table does not name, which is the
+other half.
+
+## Out of scope
+
+- The headers check's HTTP Observatory, which grades a live host and is
+  not CI: left as it is.
+- The land skill's reading of branch protection, which decides push or PR
+  and stays.
+- CI in any project that has it.
+- The game template.
+
+## Parts
+
+- [x] **1. The plan into `PLAN.md`,** as plan 9.
+- [x] **2. Tests first:** `tests/test_local.sh`, and the two edits to
+      existing tests, each seen failing on `v0.7.0` (`test_local` red on
+      every file that mentions CI; the standards test red on the table
+      until the row goes). _Check:_ `tests/run local` red first.
+- [x] **3. The edits** to the eleven files above and the deletion of
+      `checks/ci.md`. _Check:_ `tests/run` green with prettier; each new
+      test mutation-checked (a `workflow` put back into one check, the
+      test seen to name the file and line); every file touched read
+      through for the house voice.
+
+      Mutation checks, each seen failing alone and restored:
+      - `test_local_nothing_needs_a_runner`: `workflow` put back at the
+        end of a line in `checks/lint.md`; it named `checks/lint.md:5`
+        and nothing else failed
+      - `test_local_no_ci_check`: `checks/ci.md` copied back from
+        `HEAD`; it failed, with `test_checks_are_each_named_by_the_rules`
+        and the words test
+      - the standards order: ` ci` put back into `CHECK_ORDER`; the order
+        test failed
+      - the security test: the least-that-works bullet's words changed in
+        `GUARDRAILS.md`; it failed
+- [x] **4. Trial,** by a builder agent on the cheaper model, in a
+      throwaway clone of `~/projects/artshape-game-template` (its `main`
+      as it stands, which now has the mutation gate uncommitted in the
+      real checkout: clone the committed state only):
+      - the fresh-clone run from verification's smallest form, as
+        written, timed: `git clone --no-local`, `npm ci`, `npm run check`
+      - a file the tests need left untracked in the source, and the
+        fresh-clone run seen to fail
+      - the history scan from secrets' smallest form (`gitleaks` 8.30 is
+        on this machine), timed, and a made-up key three commits back on
+        a throwaway branch seen found
+      - the audit line from dependencies' smallest form, run, and
+        against an unreachable registry seen to fail rather than pass
+      - semgrep's line, if `pipx` or `uvx` can be had without installing
+        anything globally; otherwise said to be not tried
+
+      _Check:_ figures kept for "What plan 9's trial found", each line of
+      the changed smallest forms marked worked, changed or did not hold,
+      and the clone deleted.
+- [ ] **5. Release `v0.8.0`.** The commit, the tag and the pushes, each
+      only on the user's word.
+
+## Decided by the user
+
+On 2026-10-18, the three questions put to them, each answered with the
+recommendation:
+
+- **Host-side services** (GitHub's push protection, secret scanning,
+  CodeQL's default setup, Dependabot) go too, since the kit cannot see
+  them fail and "local only" means the kit holds only what runs here.
+- **The HTTP Observatory** in the headers check stays: it grades a live
+  host over the network, it is not CI, and a served page's headers can be
+  read nowhere else.
+- **`v0.8.0`** is the release: a check removed changes the table every
+  project's file points at.
+
+## What plan 9's trial found
+
+Run 2026-10-18 by a builder agent on the cheaper model, in a throwaway
+clone of `artshape-game-template` at `f357dd4`, with node 23, npm 10.9,
+gitleaks 8.30.1 and semgrep 1.181 through uvx. The figures were read
+off its report here.
+
+- **The fresh clone,** as verification's three lines are written, works
+  in bash and in zsh: `$_` lands in the new clone in both. `npm ci` took
+  2 s with a warm cache and `npm run check` 19 to 22 s when it passed.
+  It failed in 4 of 11 runs, every one a gate's wobble on this machine
+  (`frameMs` at 0.74 to 0.95 against a baseline of 0.177, and the
+  physics bench 18% quicker), not the clone's. The check now says such a
+  red is the gate's and is run again.
+- **Seen failing, verification:** a helper moved into an untracked file
+  passed the quick check in the clone and failed the fresh clone's run
+  in 2 s on the missing module. As written.
+- **The history scan:** 14 commits in 0.09 s, clean. A made-up key three
+  commits back on a throwaway branch was found, with its rule, file,
+  line, commit and fingerprint, the key redacted, exit 1. As written.
+- **The audit:** the template fails its own threshold today (6 findings,
+  3 of them high or critical, in vitest's tree, qs and others). Against
+  an unreachable registry npm exits 1 and says so, so npm's exit code is
+  enough; the check now says the `--json` guard is pnpm's.
+- **semgrep:** `--config auto --metrics=off` did not hold: semgrep
+  refuses to pick packs with metrics off, exit 2, nothing scanned. A
+  named pack, `p/default`, ran 230 rules over 56 files in 5.6 s warm
+  (24 s cold with its download). The check now gives that line, through
+  uvx since pipx was not here to try. The query string written bare
+  into `innerHTML` was not flagged, by any of five packs; joined to a
+  literal it was, as `raw-html-concat`. The check's fault is now written
+  the way the rules read it, and says so. `nosemgrep: <rule>` in a `//`
+  comment silenced it, on the line or the line above. One false positive
+  came up, a `data:` icon without an integrity hash, which is what the
+  dismissal is for.
+
+Not tried: `pipx run semgrep`; the shell-command fault in a real
+handler; the lockfile, licence and unused faults; the `EXAMPLE` key;
+the hook with a gitleaks line, which the template does not yet have.
+

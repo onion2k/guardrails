@@ -9,9 +9,9 @@ and every fork, whatever is done to the tree afterwards.
 - **Nothing staged holds a secret.** A scanner runs in the hook, over
   what is staged, before each commit: it is quick, needs no network, and
   a secret is cheapest to stop before its commit exists.
-- **Nothing in the history does.** The same scanner runs in CI over the
-  whole history, on every push, and the host's own push protection is
-  turned on where the host has it.
+- **Nothing in the history does.** The same scanner runs over the whole
+  history in the full check (seconds, for a history of thousands of
+  commits), and from the fresh clone before a release.
 - **Secrets come from outside the tree.** The code reads them from the
   environment or a secret store. The tree carries an example file with
   every name the code reads and no values, and a check holds the names
@@ -30,10 +30,8 @@ and every fork, whatever is done to the tree afterwards.
     # .githooks/pre-commit, before the quick check
     gitleaks git --pre-commit --redact --staged --verbose || exit 1
 
-    # CI, over the whole history
-    - uses: actions/checkout@v7
-      with: { fetch-depth: 0 }
-    - run: gitleaks git --redact --verbose
+    # the full check, over the whole history
+    gitleaks git --redact --verbose
 
     # .gitleaksignore: the fingerprint of each accepted finding,
     # commit:file:rule:line; why each is not a secret is kept in the
@@ -54,9 +52,7 @@ and `detect`, which older guides use, were deprecated in 8.19. gitleaks
 is feature complete and takes security fixes only: its authors have moved
 on to Betterleaks (MIT, by gitleaks' original author), which a project
 takes up once its version 2 is released, reading its own docs for what
-changes. On GitHub, secret scanning and push protection are free for
-public repositories, and are turned on in the repository's settings,
-under Advanced Security.
+changes.
 
 ## Seen failing
 
@@ -79,7 +75,5 @@ branch it was on is deleted.
   everywhere. trufflehog (version 3) does the same job and can check a
   found key against its service (`--results=verified`), which suits an
   audit of a history, not a hook.
-- **A host without push protection** has the CI scan and the hook, and
-  says so under _What is not held_.
 - **A project with no secrets at all** still runs the hook: it is the
   thing that keeps it that way.

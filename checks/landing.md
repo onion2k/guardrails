@@ -1,20 +1,19 @@
 # Landing
 
 What of `GUARDRAILS.md`'s _Landing a change_ can be held by something
-other than words: the hooks, the remote's protection, and branches left
-behind. Without it a commit lands with no body, a protected branch is
-protected by nothing that runs the checks, and branches merged months ago
-are still there to be confused with work in hand.
+other than words: the hooks, what a PR carries, and branches left behind.
+Without it a commit lands with no body, a PR is merged with nothing to
+say the full check was run on it, and branches merged months ago are
+still there to be confused with work in hand.
 
 ## What it holds
 
 - **The hooks run.** `.githooks/pre-commit` runs the quick check, and
   `.githooks/commit-msg` holds a message to a sentence summary, a blank
   line and a body. Git is pointed at them, by the project's install step.
-- **A protected default branch is protected by the checks.** Where the
-  remote protects it, its required status checks include the full check,
-  run in CI ([verification.md](verification.md)), so a PR cannot merge
-  red. Protection that asks for a PR and no checks asks for a ritual.
+- **A PR carries the full check's result.** The commit it ran on and what
+  it counted ([verification.md](verification.md)), since nothing else
+  runs it, and a PR without it is not merged.
 - **Nothing is left lying about.** A branch, local or remote, whose work
   is all on the default branch is cleared, and nothing unmerged,
   uncommitted or stashed is left without a word saying why. The tidy
@@ -39,28 +38,15 @@ land skill, and read by a person.
 The script is read, not run to delete: a branch is removed once what it
 held is checked against what landed, by the land skill or by hand.
 
-On GitHub, the protection's required checks are set in the repository's
-settings, under the branch's rule or ruleset, by someone with admin
-rights. They cannot be read without those rights, so a project file says
-what it set, and when.
-
 ## Seen failing
 
 - A commit with no body is tried, and the `commit-msg` hook is seen to
   refuse it; so is a summary with no full stop.
-- On a protected branch, a PR with the full check made red is seen not to
-  be mergeable.
 - A branch is merged and left, and the script is seen to list it.
 
 Each fault is taken out again, and nothing is committed by the trial.
 
 ## Where it cannot apply
 
-- **A project with no remote** has no protection and no PRs. Its hooks
-  are held, and the rest says so under _What is not held_.
-- **A remote that is not GitHub** sets protection its own way: GitLab's
-  protected branches, Bitbucket's branch restrictions. The project file
-  says which, and what is set.
-- **A project whose CI cannot run the full check** (a gate that needs
-  this machine's GPU) has the checks that can run required, and says
-  which cannot, under _What is not held_.
+- **A project with no remote** has no PRs. Its hooks are held, and the
+  rest says so under _What is not held_.

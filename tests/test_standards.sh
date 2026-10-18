@@ -25,7 +25,7 @@ test_standards_quick_check_points_and_does_not_repeat() {
 }
 
 # The order a project takes the checks on, as the table gives it.
-CHECK_ORDER="quick-check secrets formatting lint code-scanning structure dependencies unit test-api invariants fuzzer determinism persisted-shapes bounded gates look headers verification ci landing mutation"
+CHECK_ORDER="quick-check secrets formatting lint code-scanning structure dependencies unit test-api invariants fuzzer determinism persisted-shapes bounded gates look headers verification landing mutation"
 
 test_standards_table_is_in_the_order_they_are_taken_on() {
   local got

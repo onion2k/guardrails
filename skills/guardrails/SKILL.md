@@ -26,7 +26,7 @@ user would rather not, carry on with the kit as it is.
   that holds more than a pointer to it.
 - The code: what the thing is, where its logic is, and where it is
   presented. The build and package files, the test runner and its config,
-  the tests, any hook, any CI, and each script that measures anything.
+  the tests, any hook, and each script that measures anything.
 - The last month of the git history, for what has broken and what changed
   most.
 
@@ -104,9 +104,8 @@ with the formatter and lint in it, since every later check lands through
 it, the secret scan among them; then code scanning, the structure rules,
 the dependencies, unit tests and the seeded source, the test
 API, the invariants, the fuzzer, and the rest. Verification comes once
-there is a full check to run, and somewhere other than this machine to run
-it. A project with a known fault takes the check that would have caught it
-early.
+there is a full check to run from a fresh clone. A project with a known
+fault takes the check that would have caught it early.
 
 A secret found while surveying is reported by its path and line, never
 quoted, and rotating it is put to the user before anything else in the

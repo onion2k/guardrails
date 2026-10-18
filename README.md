@@ -172,15 +172,16 @@ Each release is a git tag, `v0.1.0` and on. `INSTALL.md` installs the
 newest, and an update compares the project's files with the kit at the tag
 it has, which is how a hand edit is told from the kit's own.
 
-| Tag      | What changed                                                                                                                                |
-| -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `v0.1.0` | The first: the rules, eleven checks, five skills, installed by an agent alone.                                                              |
-| `v0.2.0` | Formatting, lint, structure and verification as checks of their own; the quick check points at them.                                        |
-| `v0.3.0` | How a change lands: the remote's protection picks push or PR, merge style and grants asked at install, the land skill, the commit-msg hook. |
-| `v0.4.0` | Dependencies: a rule that one is taken in on purpose, and a check for exact installs, advisories, licences, unused packages and updates.    |
-| `v0.5.0` | Security: secrets kept out of the tree, code scanning, CI held to least access and pinned actions, and a served page's headers.             |
-| `v0.6.0` | Nothing left behind: the tidy skill finds what work left anywhere, says what each is, and settles it on the user's word.                    |
-| `v0.7.0` | Mutation: the hand check's line says what was changed, and a mutation tool's survivors are a gate, counted per file and held exactly.       |
+| Tag      | What changed                                                                                                                                                       |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `v0.1.0` | The first: the rules, eleven checks, five skills, installed by an agent alone.                                                                                     |
+| `v0.2.0` | Formatting, lint, structure and verification as checks of their own; the quick check points at them.                                                               |
+| `v0.3.0` | How a change lands: the remote's protection picks push or PR, merge style and grants asked at install, the land skill, the commit-msg hook.                        |
+| `v0.4.0` | Dependencies: a rule that one is taken in on purpose, and a check for exact installs, advisories, licences, unused packages and updates.                           |
+| `v0.5.0` | Security: secrets kept out of the tree, code scanning, CI held to least access and pinned actions, and a served page's headers.                                    |
+| `v0.6.0` | Nothing left behind: the tidy skill finds what work left anywhere, says what each is, and settles it on the user's word.                                           |
+| `v0.7.0` | Mutation: the hand check's line says what was changed, and a mutation tool's survivors are a gate, counted per file and held exactly.                              |
+| `v0.8.0` | Local only: CI comes out. Every check holds in the hook, the full check or a fresh clone before a release; nothing needs a runner, a bot or a host's own scanning. |
 
 ## Left out on purpose
 
@@ -198,3 +199,7 @@ was left out of `GUARDRAILS.md`, and why:
   mode", screenshots "with Playwright", "the in-app browser pane". Each is
   said by what it is for, so that the rule holds in a harness that has
   something else.
+- **CI.** The kit is for the machine the work is done on: every check
+  holds in the hook, the full check, or a fresh clone before a release,
+  and none needs a runner, a bot or a host's own scanning. A project that
+  has CI runs the same full check there, and that is its own business.

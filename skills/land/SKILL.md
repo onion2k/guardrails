@@ -1,6 +1,6 @@
 ---
 name: land
-description: Land committed work on the project's default branch, the way the guardrails kit says a change lands. Reads from the remote whether the branch is protected, then pushes straight to it or opens a PR, says what CI shows, merges in the project's style, tags a release when asked, and clears up. Pushes, opens PRs, merges and tags only on the user's word, or where the project file grants it. Use when the user asks to push, open a PR, merge, land or release work.
+description: Land committed work on the project's default branch, the way the guardrails kit says a change lands. Reads from the remote whether the branch is protected, then pushes straight to it or opens a PR, runs the full check once more before a merge, merges in the project's style, tags a release when asked, and clears up. Pushes, opens PRs, merges and tags only on the user's word, or where the project file grants it. Use when the user asks to push, open a PR, merge, land or release work.
 ---
 
 # land
@@ -68,17 +68,19 @@ what will happen first: which commits, to which branch, on which remote.
   point, and what was not verified, so it stands by itself for a reader
   who sees nothing else. Its title is the change's summary line.
 
-## 4. What CI says
+## 4. The full check, once more
 
-Read the PR's checks once, when asked or when about to merge, and say
-what they show: passed, failed (with the failure's first lines), or still
-running. Do not wait on them in a loop. A red check is a fault to be
-found at its cause: the bug skill, or the gate-moved skill for a gate.
+Before a merge, run the full check on the branch as it will merge: merged
+with the default branch locally, in a worktree of its own, with the
+checkout left as it was. Put the result in the PR: passed or failed (with
+the failure's first lines), the commit it ran on, and what it counted.
+A red check is a fault to be found at its cause: the bug skill, or the
+gate-moved skill for a gate.
 
 ## 5. Merge
 
 Only on the user's word, every time. In the project's merge style, a merge
-commit where its file says nothing, with every required check green. A
+commit where its file says nothing, with the full check green. A
 merge the remote refuses stops here, and is said.
 
 ## 6. Release, when asked
@@ -106,6 +108,6 @@ find (its steps 1 to 3) and say anything else it shows.
   or tagged, and what is still the user's to do.
 - **What was read:** the default branch and whether it is protected, and
   how that was found.
-- **CI:** what it showed, when it was read.
+- **The full check:** its result, and the commit it ran on.
 - **Not done,** and why: a step waiting on the user's word, a refusal, a
-  red check.
+  red full check.

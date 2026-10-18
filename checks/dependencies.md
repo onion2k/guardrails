@@ -8,16 +8,16 @@ downloaded, audited and updated.
 
 ## What it holds
 
-- **Installs are exact.** The lockfile is committed. CI and every gate
-  install from it, and fail where it would change, rather than quietly
-  writing a new one. A dependency taken from a git ref is pinned to a tag
-  or a commit, never a branch.
+- **Installs are exact.** The lockfile is committed. Every gate, and every
+  fresh clone, installs from it, and fails where it would change, rather
+  than quietly writing a new one. A dependency taken from a git ref is
+  pinned to a tag or a commit, never a branch.
 - **Known advisories are seen.** An audit of the installed tree runs in
-  CI on every push and on a schedule, because an advisory can be published
-  against a tree that has not changed. It does not run in the hook: it
-  needs the network, and its answer moves when nothing here has. It covers
-  dev dependencies as well as what ships: a test runner runs on every
-  developer's machine and in CI, with their access. It fails at the
+  the full check, and before each monthly update, because an advisory can
+  be published against a tree that has not changed. It does not run in the
+  hook: it needs the network, and its answer moves when nothing here has.
+  It covers dev dependencies as well as what ships: a test runner runs on
+  every developer's machine, with their access. It fails at the
   project's threshold, the same for both unless the project file says
   otherwise. A finding the project accepts is written
   down, with why and a date to look again, and is listed by every run
@@ -45,9 +45,8 @@ The questions a project answers, at install or when its file lacks them:
 2. **Allowed licences:** MIT, BSD-2-Clause, BSD-3-Clause, ISC, Apache-2.0,
    0BSD and the Unlicense, with anything else asked about by name
    (recommended). Or a list of the project's own.
-3. **How updates arrive:** a bot for security updates only, and version
-   updates by hand, monthly, a commit each (recommended). Or a bot for all
-   updates, grouped weekly.
+3. **How updates arrive:** by hand, monthly, a commit each, with the audit
+   run first (recommended). Or on the project's own cadence. No bot.
 
 ## Its smallest form
 
@@ -56,52 +55,23 @@ The questions a project answers, at install or when its file lacks them:
     "licences": "license-checker-rseidelsohn --production --excludePrivatePackages --onlyAllow 'MIT;BSD-2-Clause;BSD-3-Clause;ISC;Apache-2.0;0BSD;Unlicense'",
     "unused":   "knip --dependencies"
 
-    # .github/workflows/dependencies.yml
-    on:
-      push: { branches: [main] }
-      schedule: [{ cron: '0 6 * * 1' }]
-    jobs:
-      dependencies:
-        runs-on: ubuntu-latest
-        steps:
-          - uses: actions/checkout@v7
-          - uses: actions/setup-node@v7
-            with: { node-version: 'lts/*' }
-          - run: npm ci
-          - run: npm run audit
-          - run: npm run licences
-          - run: npm run unused
-
-    # .github/dependabot.yml: security updates only. They are turned on
-    # in the repository's settings, not here; this stops version updates.
-    version: 2
-    updates:
-      - package-ecosystem: npm
-        directory: /
-        schedule: { interval: monthly }
-        open-pull-requests-limit: 0
-
 `npm ci` fails where the lockfile and `package.json` disagree, instead of
 updating the lockfile. `npm audit --audit-level` sets the lowest severity
 that fails the run, and still reports the rest. With pnpm:
-`pnpm install --frozen-lockfile`, the default in CI, and
+`pnpm install --frozen-lockfile` and
 `pnpm audit --audit-level high`, which reports at that level and above.
 Whether an audit that reached no registry fails depends on the tool and
 its version: pnpm's current docs say a registry error leaves it exiting
-0, and pnpm 8 was seen to exit 1. So the job does not trust the exit code
+0, and pnpm 8 was seen to exit 1, where npm exits 1 and says the endpoint
+returned an error. So with pnpm the script does not trust the exit code
 alone: it runs the audit with `--json` and fails where what came back is
 not a report. In a workspace, the licence check runs in each package
 that ships (`pnpm -r exec`), since a workspace's root often has nothing
-but dev dependencies, and is found to have no packages at all. With Renovate in place of Dependabot, the preset
-`security:only-security-updates` does the same.
+but dev dependencies, and is found to have no packages at all.
 
-npm 12, pnpm 12, license-checker-rseidelsohn 5 (the original
-license-checker has had no release since 2019; version 5 asks for Node
-24), knip 6, actions/checkout 7
-and setup-node 7, all as of October 2026. A scheduled workflow runs from
-the default branch, in UTC, and GitHub stops it in a public repository
-after 60 days with no activity, so a quiet project checks that it still
-runs.
+npm 12, pnpm 12, license-checker-rseidelsohn 5 (the original license-checker
+has had no release since 2019; version 5 asks for Node 24) and knip 6, all
+as of October 2026.
 
 ## Seen failing
 
@@ -115,7 +85,7 @@ Each fault is put in on a throwaway branch, seen to fail, and taken out:
   naming it
 - an import removed, leaving its dependency unused: it is reported
 - the audit pointed at a registry that cannot be reached
-  (`--registry http://127.0.0.1:9`): the job fails, and does not pass on
+  (`--registry http://127.0.0.1:9`): the audit fails, and does not pass on
   an empty report
 
 ## Where it cannot apply
@@ -134,7 +104,8 @@ Each fault is put in on a throwaway branch, seen to fail, and taken out:
   seen there. That list is checked against the pinning projects' own
   manifests wherever they can be read, and a list that disagrees is a
   finding in the package. A lockfile that resolves it over `git+ssh`
-  installs only where there is a key: CI is given one, or the dependency
-  is resolved over HTTPS, and a clean CI install shows which.
+  installs only where there is a key: a machine installing it needs one, or
+  the dependency is resolved over HTTPS, and a fresh clone install shows
+  which.
 - **A project with no dependencies** says so, and keeps the rule for the
   day it takes one in.

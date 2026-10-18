@@ -8,8 +8,8 @@ test_security_rules_point_at_their_checks() {
   local bad=0 s; s="$(section_of GUARDRAILS.md Structure)"
   grep -A8 '^- \*\*A secret never enters the tree' <<<"$s" | grep -q 'checks/secrets.md' \
     || { echo "the secrets rule does not point at checks/secrets.md"; bad=1; }
-  grep -A8 '^- \*\*The least that works' <<<"$s" | grep -q 'checks/ci.md' \
-    || { echo "the least-that-works rule does not point at checks/ci.md"; bad=1; }
+  grep -q '^- \*\*The least that works' <<<"$s" \
+    || { echo "Structure does not have the least-that-works rule"; bad=1; }
   return $bad
 }
 

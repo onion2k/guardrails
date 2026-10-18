@@ -99,10 +99,9 @@ holds it: copied into the file, it is soon wrong.
   with the names and no values. One that is committed is rotated, not
   only removed: the history keeps it, and so does every clone. Held by
   [checks/secrets.md](checks/secrets.md).
-- **The least that works.** A token, a workflow, a deploy key or a process
-  is given only what its job needs, and a third-party action, script or
-  image is pinned to what was read. Held, for CI, by
-  [checks/ci.md](checks/ci.md).
+- **The least that works.** A token, a deploy key or a process is given
+  only what its job needs, and a third-party script or image is pinned to
+  what was read.
 - **A package changes nothing for a project that did not ask.** New
   behaviour is an option whose default is the old, a fix that would change
   how a consumer runs is a switch it turns on, and a gate holds the old
@@ -200,8 +199,7 @@ it has been seen to fail what it is for.
 | [look](checks/look.md)                         | what the user sees, held to pictures looked at                      |
 | [headers](checks/headers.md)                   | what a served page tells the browser to refuse                      |
 | [verification](checks/verification.md)         | that each check reaches what it says it does                        |
-| [CI](checks/ci.md)                             | workflows given least access, pinned to what was read               |
-| [landing](checks/landing.md)                   | the hooks, the remote's protection, and branches left behind        |
+| [landing](checks/landing.md)                   | the hooks, what a PR carries, and branches left behind              |
 | [mutation](checks/mutation.md)                 | a test seen to fail when its bug is put back, and survivors counted |
 
 ## Verifying
@@ -341,13 +339,14 @@ the project's own answers to the questions at the end.
   said, and the change goes by PR.
 - **Green before** each step: the quick check before a commit, through
   the hook. The pass of the definition of done before a change lands on
-  the default branch, once, not for each commit on the way. CI green
-  before a PR merges.
+  the default branch, once, not for each commit on the way. The full
+  check green on the commit merged, run by whoever merges and said in the
+  PR.
 - **A PR** says what changed and why, the definition of done point by
   point, and what was not verified, so that it stands by itself for a
   reader who sees nothing else.
 - **Merging** is in the project's merge style, a merge commit unless its
-  file says otherwise, with CI green.
+  file says otherwise, with the full check green.
 - **Releases** are a semver tag, annotated, on the commit released, and a
   line in the project's release notes saying what changed. A tag that has
   been pushed is never moved or deleted: somebody may have it. One not

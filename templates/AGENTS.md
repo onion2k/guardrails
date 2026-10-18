@@ -22,10 +22,9 @@ file a tool holds it in.
     [full check]           all of it: the quick check, then every gate (~N s)
     [each gate]            [what it holds the project to]
     [format]               the formatter, writing: by hand, never by the hook
-    [CI]                   [where the full check runs besides this machine, and on what]
     [mutate]               the tests' surviving mutants, per file, held to the baseline under Gates (or: no mutation tool yet)
     [audit]                the dependencies' known advisories, at the threshold under Gates
-    [updates]              [how updates arrive: a bot for security updates only, versions by hand monthly]
+    [updates]              by hand, monthly, a commit each, the audit first
 
 [Which command writes each baseline again. Only for a change meant to move
 it, and the commit says why.]
