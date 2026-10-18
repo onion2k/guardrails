@@ -1753,7 +1753,7 @@ other half.
       _Check:_ figures kept for "What plan 9's trial found", each line of
       the changed smallest forms marked worked, changed or did not hold,
       and the clone deleted.
-- [ ] **5. Release `v0.8.0`.** The commit, the tag and the pushes, each
+- [x] **5. Release `v0.8.0`.** The commit, the tag and the pushes, each
       only on the user's word.
 
 ## Decided by the user
