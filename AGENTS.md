@@ -9,6 +9,7 @@ GUARDRAILS.md before changing anything: @GUARDRAILS.md
 
     tests/run              every check the kit has (a few seconds)
     tests/run <word>       only the tests whose name has the word in it
+    sh next                where the kit's own plans stand, and what comes next
 
 The format test needs prettier, from the PATH or named by `PRETTIER`;
 without it the test is skipped, and says so.
@@ -30,12 +31,17 @@ every machine has, so that the kit asks nothing of whoever checks it.
   a project and to take a newer one in. There is no script, so nothing
   but git is asked of the machine a project is on. `tests/` holds the kit
   to what is said here.
-- `PLAN.md` is the plan the kit is being built to, ticked as it goes.
+- `PLAN.md` holds the kit's plans, one `# ` section each, ticked as they
+  go, each with the state line `next` reads.
+- `next` is the script a project gets as `guardrails/next`: POSIX sh,
+  reading `plans/` and `PLAN.md`.
 
 ## Model features
 
 - **A check:** `checks/fuzzer.md` for the shape of a check's file.
 - **A skill:** `skills/bug/SKILL.md` for the shape of a skill.
+- **A script:** `next`, POSIX sh, held by `tests/test_next.sh` on
+  projects made under `mktemp -d`.
 - **A test:** `tests/test_skills.sh`, a function a rule, failing with a
   line saying what and where.
 
@@ -60,6 +66,8 @@ For anything new, check what it does:
 - **a project that is not a game:** a package, a site, a service, a CLI:
   does the check say what stands in for it
 - **a path with a space in it**, and a project that is not a git repo
+- **a plan file:** a state line in no form, a box in a code block, a plan
+  on a branch not yet on the default branch
 - **Windows:** nothing a project runs or an install asks for may need more
   than git; no shell script, no tool only one system has
 
@@ -89,6 +97,8 @@ against what the file says should have happened.
   random. A change to the kit is held to its tests, a mutation check of
   each new one, and a read of what changed in every file it touched.
 - **The house voice** is held by a reader, not a test.
+- **`next` on Windows.** It is run under `sh` and `dash` here; the `sh`
+  Git for Windows installs is not tried.
 
 ## Who uses it
 

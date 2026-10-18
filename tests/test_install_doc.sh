@@ -11,7 +11,7 @@ test_install_doc_names_every_path_the_kit_writes() {
   for path in guardrails/GUARDRAILS.md guardrails/checks/ guardrails/INSTALLED.md \
     .agents/skills/ .claude/skills/ AGENTS.md CLAUDE.md GEMINI.md .githooks/pre-commit \
     templates/AGENTS.md templates/CLAUDE.md templates/GEMINI.md templates/pre-commit \
-    .githooks/commit-msg templates/commit-msg; do
+    .githooks/commit-msg templates/commit-msg guardrails/next; do
     grep -qF -- "$path" <<<"$doc" || { echo "INSTALL.md does not name $path"; bad=1; }
   done
   return $bad

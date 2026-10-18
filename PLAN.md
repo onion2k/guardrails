@@ -1,5 +1,7 @@
 # Plan: a portable guardrails kit
 
+State: landed on main at e9f257c, 2026-10-17.
+
 Written 2026-10-17 from the artshape game template (its `CLAUDE.md`,
 `.claude/skills/{feature,bug,gate-moved,commit}`, `src/invariants.ts`,
 `scripts/fuzzer.ts`, `src/debug.ts`) and the house rules in
@@ -208,6 +210,8 @@ Found in the projects, and theirs to look into, not the kit's:
 
 # Plan 2: drop the installer
 
+State: landed on main at 523d208, 2026-10-17.
+
 Written 2026-10-17, on `e9f257c`. Nothing is built until the user says go.
 
 ## Aim
@@ -343,6 +347,8 @@ without anyone having seen it; that is the user's call.
 ---
 
 # Plan 3: standards held by checks, not only said
+
+State: landed on main at be53bd2, 2026-10-17.
 
 Written 2026-10-17, on `523d208` (`v0.1.0`). Nothing is built until the
 user says go.
@@ -516,6 +522,8 @@ here afterwards.
 ---
 
 # Plan 4: how a change lands
+
+State: landed on main at f822e64, 2026-10-17.
 
 Written 2026-10-17, on `be53bd2` (`v0.2.0`). Nothing is built until the
 user says go.
@@ -713,6 +721,8 @@ from 241 lines to 41, the old kept beside it as
 
 # Plan 5: dependencies
 
+State: landed on main at 315595c, 2026-10-17.
+
 Written 2026-10-17, on `f822e64` (`v0.3.0`). Nothing is built until the
 user says go.
 
@@ -903,6 +913,8 @@ each clone checked here afterwards.
 ---
 
 # Plan 6: security
+
+State: landed on main at 7c88cbf, 2026-10-17.
 
 Written 2026-10-17, on `315595c` (`v0.4.0`). Nothing is built until the
 user says go.
@@ -1132,6 +1144,8 @@ tagged `v0.5.0`. Each finding was confirmed here.
 ---
 
 # Plan 7: nothing left behind
+
+State: landed on main at 8635746, 2026-10-17.
 
 Written 2026-10-17, on `7c88cbf` (`v0.5.0`). Nothing is built until the
 user says go.
@@ -1363,6 +1377,8 @@ Run 2026-10-17 by two agents.
 
 # Plan 8: the mutation check gets an instrument
 
+State: landed on main at 3ecc278, 2026-10-18.
+
 Written 2026-10-18, on `8635746` (`v0.6.0`), on the strongest model to hand,
 in plan mode. Nothing is built until the user says go.
 
@@ -1578,6 +1594,8 @@ template itself is the template's own change, out of scope here.
 
 
 # Plan 9: CI comes out of the kit
+
+State: landed on main at adacda4, 2026-10-18.
 
 Written 2026-10-18, on `3ecc278` (`v0.7.0`), on the strongest model to hand,
 in plan mode. Built from the answers under _Decided by the user_.
@@ -1810,3 +1828,626 @@ Not tried: `pipx run semgrep`; the shell-command fault in a real
 handler; the lockfile, licence and unused faults; the `EXAMPLE` key;
 the hook with a gitleaks line, which the template does not yet have.
 
+
+---
+
+# Plan 10: plans kept in the project, and where every piece of work stands
+
+State: building, part 7 of 7.
+
+Written 2026-10-18, on `facdfe1` (`v0.8.0` and one tick), on the strongest
+model to hand, in plan mode. Agreed on 2026-10-18 as written, under
+_Decided by the user_. The state line above is the shape this plan gives
+every plan, and is written into `PLAN.md` with it in part 1. From part 1 on
+the build is work for the cheaper model: in a session switched to it, or by
+the builder agent a part at a time, with this plan as the brief.
+
+## Aim
+
+A plan is agreed in the harness's plan mode, which writes it to a file of
+its own naming on this machine, and that copy goes stale: of the twelve
+newest, six show nothing ticked, because ticking happens in a copy kept in
+the repo. That copy is already the user's practice, ad hoc: ooerfish keeps
+twelve plans in `docs/`, ooergolf has `GUARDRAILS-PLAN.md`, artshape-sound
+and this kit each have a `PLAN.md`. No two projects keep them in the same
+place, and none says in a line whether it is open, landed or parked: a
+reader counts boxes. Git says nothing once work lands (four projects clean
+on 2026-10-18, no branches at the remote, no PRs, because the clearing-up
+rule works), and the tidy skill already finds what work leaves behind in
+git. What is missing is intent: what each piece of work is, where it
+stands, and what comes next.
+
+The user chose the shape on 2026-10-18: plans live in `plans/<name>.md`,
+and where work stands is read by a tool, never kept by hand. Not chosen,
+and not built: a kept `NEXT.md` every session updates, or leaning on a
+harness's own list of sessions.
+
+Done looks like this. A plan is a file in the project, named for the work,
+whose line under its title says where it stands in a form a script reads
+without guessing. One script, shipped by the kit and needing nothing but
+`sh`, `git` and `gh` where it is present, prints one screen for a project:
+each open plan with its state, its progress in boxes and its first open
+box; what git and the remote hold that tidy would find, by tidy's own
+judgements; and what has landed on the default branch since the last tag.
+A `next` skill runs it and reads it out. The rules and the skills that
+touch plans say the same thing. Released as `v0.9.0`.
+
+## The design
+
+### Where a plan lives
+
+`plans/<name>.md`, one plan a file, named for the work (a slug of its
+title), on the work's branch, so it lands with the work. A plan agreed in
+a harness's own plan file is copied there the moment it is agreed, and the
+copy is the one ticked. A landed plan stays where it is, with its state
+line saying so; `next` shows only what is open.
+
+A project may instead keep its plans as sections of one `PLAN.md` at its
+root, as this kit does, one `# ` heading a plan. The script reads both in
+the same way: a plan is a `# ` heading, the state line under it, and the
+boxes up to the next `# ` heading. Nothing else is read: a plan kept
+anywhere else (ooerfish's `docs/`, ooergolf's `GUARDRAILS-PLAN.md`) is
+moved into `plans/` by its project when it chooses, which is out of scope
+here.
+
+### The state line
+
+The first non-blank line after a plan's title, in one of four forms, and
+no other:
+
+    State: agreed 2026-10-18.
+    State: building, part 3 of 7.
+    State: landed on main at 1a2b3c4, 2026-10-18.
+    State: parked, waiting on the renderer's next release.
+
+- **agreed**, with the date it was agreed. Nothing is built yet.
+- **building, part n of m**: n is the first open box, counting from one;
+  m is the boxes, dropped ones left out. Moved as each box is ticked, so
+  the file says the same as the chat.
+- **landed on `<branch>` at `<hash>`, `<date>`**: the default branch, the
+  commit the work landed in (the merge, or the last push), and the date.
+  Written in the tick commit after it lands, as this kit does already.
+- **parked, `<why>`**: stopped, and why, in a few words.
+
+The full stop at the end is allowed and not required. As patterns, for
+the script and the tests (extended regular expressions, one a line):
+
+    ^State: agreed [0-9]{4}-[0-9]{2}-[0-9]{2}\.?$
+    ^State: building, part [1-9][0-9]* of [1-9][0-9]*\.?$
+    ^State: landed on [^ ]+ at [0-9a-f]{7,40}, [0-9]{4}-[0-9]{2}-[0-9]{2}\.?$
+    ^State: parked, .+$
+
+A line that matches none of these, or a plan with no `State:` line under
+its title, is refused by name (the file, and the title), with the line as
+written, and never guessed at. A refusal does not stop the rest of the
+screen, and the script exits non-zero at the end so a loop can count them.
+
+### The boxes
+
+A box is a list item at the start of a line: `- [ ]` open, `- [x]` ticked,
+`- [-]` dropped, which the user's own plans already use for a part given
+up (ooergolf's part 9). Every box at the top level counts, wherever it is
+in the file: a part, or a question the user owes, which is a box like any
+other, and its place in the file says whether it blocks (ooergolf's two
+questions sit above its parts, and are next). A box indented under
+another is not a part. Boxes inside a fenced code block are not read, and
+nor is a `# ` line there.
+
+Progress is ticked of (ticked plus open); dropped boxes are said apart
+("and 1 dropped"). The next step is the first open box: its number among
+the counted boxes, and its text, which is the bold run where the box has
+one, else its first line, stripped of a leading number or `Part n:`, of
+emphasis and backticks, and cut to fit the column at a space.
+
+The state line is held equal to the boxes. Where it says `agreed` and a
+box is ticked, or `building, part n of m` and the boxes give another n or
+m, or `building` and every box is ticked, the script prints both facts on
+a line under the plan's row and leaves the row standing: the line is well
+formed and out of date, which is not a refusal.
+
+### The script: `next`
+
+`next` at the kit's root, so that a project gets it as `guardrails/next`,
+beside `guardrails/GUARDRAILS.md` and `guardrails/checks/`, copied byte
+for byte and compared on an update like them. POSIX `sh`, `git`, and the
+tools git brings with it on every system (`awk`, `sed`, `grep`, `find`),
+with `gh` where it is present and the remote is GitHub. No bash, no
+`local`, no arrays, no `date -d` or `date -v`, no gawk-only syntax; it is
+run under `dash` in the tests where this machine has one. On Windows it
+runs under the `sh` Git for Windows installs, which is the one thing a
+project already needs.
+
+    sh guardrails/next            the project the shell is in
+    sh guardrails/next <folder>   that project
+    sh next                       in the kit itself
+
+It writes nothing: no fetch, no `merge-tree`, no `git status` (which
+refreshes the index); the changes in a tree are read with
+`git diff-index --name-only HEAD` and `git ls-files --others
+--exclude-standard`. It reads, in this order:
+
+1. **The plans.** `plans/*.md` and `PLAN.md`, each file once through awk.
+   For each open plan: the title, the state, the counts, the next box;
+   the date it last moved, which is the last commit touching the file
+   (`git log -1 --format=%cd --date=format:'%d %b %Y' -- <file>`, the
+   year shown only when it is not this year), or `uncommitted` where the
+   file has changes in the tree, or `untracked`. Where the plan is: on
+   the branch the checkout is on, if that is not the default branch and
+   the file differs from the default branch's copy or is absent there;
+   and, on the default branch, whether any other branch, local or remote,
+   holds a different copy (`git diff --quiet <ref> <default> -- <file>`
+   over `git for-each-ref refs/heads refs/remotes`). An open plan on the
+   default branch that no branch differs on is said so: "no branch is at
+   work on it", which is what tidy reports as building while its branch
+   is merged or gone. Landed plans are counted, not listed; the newest by
+   its date is named when nothing is open.
+2. **What tidy would find,** read only, by the tidy skill's own words in
+   its step 3, so that the read-only run tidy describes is this script.
+   The default branch from `git symbolic-ref -q refs/remotes/<remote>/HEAD`,
+   else `git ls-remote --symref <remote> HEAD`, else, with no remote, the
+   one of `main` and `master` that exists, said to be assumed; the remote
+   is the first `git remote` lists. Then: the checkout's uncommitted
+   changes and untracked files (a count), stashes, commits on the default
+   branch not at the remote, a detached HEAD; each local branch but the
+   default, ahead and behind it, merged by ancestry
+   (`git merge-base --is-ancestor`) or "not merged by ancestry"; each
+   worktree but this one (`git worktree list --porcelain`), its branch,
+   clean or not, locked, prunable, and in use (locked, or a changed file
+   modified in the last hour: the changed files from `diff-index` and
+   `ls-files`, filtered by `find -mmin -60`); each remote branch but the
+   default, merged by ancestry or not; stale, for a branch whose newest
+   commit (`%(committerdate:unix)`) or a PR whose `updatedAt` is older
+   than the project's threshold, read from the project file's
+   `**Stale after:**` line, 30 days where it has none, said so. PRs by
+   `gh pr list --state open --json number,title,headRefName,updatedAt,author`
+   where `gh` is on the path and the remote's URL is GitHub's, else a
+   line saying they were not read and why. A PR's age in days from its
+   ISO timestamp by a days-from-civil sum in awk, since `date` cannot
+   parse one portably.
+3. **Since the last tag.** `git describe --tags --abbrev=0 <default>`,
+   then `git rev-list --count <tag>..<default>` and the summaries of up to
+   three of those commits; or "no tag yet" with the count of commits.
+
+The screen, in the shape the user chose, columns fixed so a loop over
+projects lines up; the project's name is the folder's, printed on the
+first line only:
+
+    guardrails      Plan 10: plans kept in the project, and whe  building, 1 of 7  next: 2, Tests first                18 Oct
+                      on claude/trusting-bassi-def90b, not yet on main
+                    9 plans landed
+                    main: v0.8.0, 1 commit since: Tick plan 9's release, now that v0.8.0 is tagged and pushed.
+                    branch claude/trusting-bassi-def90b: not merged by ancestry, 2 ahead, 0 behind, today
+                    worktree .claude/worktrees/trusting-bassi-def90b on claude/trusting-bassi-def90b: in use
+                    remote origin: no branches besides main; no open PRs
+
+    ooerfish        Fights that differ, fish that get away, and   building, 4 of 5  next: 5, The pass                   17 Oct
+                    The painted edge in ooerfish: the plan        building, 5 of 6  next: 5, The pass                   13 Oct
+                    The crystal-clear water: the plan             parked, 14 of 14  parked: the four left are dropped   15 Oct
+                                                                                     and 4 dropped
+                    plans/old.md: refused, the state line is not one of the four: "State: done."
+                    uncommitted: 17 files changed in the checkout; 1 stash
+                    main: v0.3.0, 0 commits since
+
+    sysmod          no plans/ and no PLAN.md
+                    uncommitted: 3 files changed in the checkout
+                    main: no tag yet, 212 commits
+
+The words in the git lines are tidy's: merged, not merged by ancestry,
+uncommitted, stale, in use. Nothing is recommended; that is the skill's.
+
+### The check: `checks/plans.md`
+
+The state line's grammar is said once, here, and the rules and the skills
+point at it, as `checks/dependencies.md` holds the questions the installer
+asks. Four sections like every check:
+
+- _What it holds_: every plan says where it stands, in a form a script
+  reads; the line and the boxes agree; a landed plan's commit is on the
+  default branch; `next` shows only what is open.
+- _Its smallest form_: `plans/<name>.md`, the four forms as the code
+  block above, the box marks, and `sh guardrails/next`.
+- _Seen failing_: a state line misspelt on purpose, refused by name; a
+  box ticked past the line, said as a disagreement; a plan file with no
+  title, refused.
+- _Where it cannot apply_: a project with no plans yet, which the script
+  says; one keeping its plans as sections of a `PLAN.md`, read the same
+  way; a plan agreed in a harness's own file, copied in when agreed.
+
+A row in `GUARDRAILS.md`'s table, after `landing` and before `mutation`:
+"plans | every plan saying where it stands, read by a script, with what
+comes next".
+
+### The skill: `next`
+
+`skills/next/SKILL.md`, name `next`. Run `sh guardrails/next` for the
+project, or once in each project of a folder; read what it printed, and
+say, in one screen: for each refusal, what the state line should say,
+read from the file and the git log, not written; for each disagreement,
+which is right; for each open plan, the next step in a line, from its
+first open box and the check beside it; for each git line, what tidy
+would put to the user, by tidy's words, and that tidy settles it; for the
+commits since the last tag, whether a release is due (a tick alone is
+not), which is the land skill's. Then stop: it writes nothing and changes
+nothing, and what to do next is the user's to say. It names no harness,
+no project command and no model.
+
+### What else changes
+
+- **`GUARDRAILS.md`.** _Before building_, the plan rule: "and is kept in
+  a file" becomes kept in `plans/<name>.md`, named for the work, on the
+  work's branch, with the line under its title saying where it stands as
+  `checks/plans.md` gives, moved as each box is ticked, so where the work
+  stands can be read off the file, and off every plan in a project by
+  the `next` skill, at any time. _Reporting_ gains a bullet: **A report
+  ends with the next step,** and the plan's state line is moved before
+  the report is written, so the file and the chat say the same. The
+  table gains the `plans` row. The file stays near its length.
+- **`skills/feature/SKILL.md`.** Phase 2's _Parts_ bullet: the checklist
+  is written to `plans/<name>.md` the moment the spec is agreed, its
+  state line `agreed` with the date, in the form `checks/plans.md` gives;
+  where the harness has a plan mode, the spec is written there first and
+  copied in when agreed, and the copy is the one ticked. Phase 3 step 5:
+  tick the part's box there and move the state line to the next part.
+  Phase 5: _Parts_ names the file; the report ends with the next step.
+- **`skills/guardrails/SKILL.md`.** Phase 3 writes its plan to
+  `plans/<name>.md` with a state line, not "a file the project file
+  points to".
+- **`skills/land/SKILL.md`.** Step 7, _Clear up_, sets the plan's state
+  line to landed, on the default branch at the commit it landed in with
+  the date, in a tick commit of its own; where the commit is the push
+  itself, the tick follows it. Step 8's report ends with the next step.
+- **`skills/tidy/SKILL.md`.** Step 1's read-only run is `sh
+guardrails/next`, which it runs first; step 2 gains **the plans**:
+  one whose state says agreed or building, on the default branch, with no
+  branch holding a different copy, is work whose branch merged or is
+  gone; step 4 puts it to the user as landed, or parked with why, and
+  step 5 writes the line only on the user's word. The five kinds stay.
+- **`templates/AGENTS.md`.** Under _Commands_:
+  `sh guardrails/next      where every plan in plans/ stands, and what comes next`.
+- **`INSTALL.md`.** _Installing_ step 1 copies the kit's `next` to
+  `guardrails/next`, made executable where the system has such a thing,
+  and the comparison in _Updating_ step 1 covers it; the lines to add to
+  a project's own `AGENTS.md` include the command; a line says the kit
+  writes nothing in `plans/`, which the first plan makes.
+- **`README.md`.** _What is in it_ lists `next` and the eight skills
+  (the listing names five today); _Installing_'s kit-own list gains
+  `guardrails/next`; a short paragraph, _Where work stands_, says where
+  plans go and what `next` prints; a `v0.9.0` row in the release table.
+- **This kit's `AGENTS.md`.** `sh next` under _Commands_; _Layout_ names
+  `next` and `plans/`'s stand-in, `PLAN.md`.
+- **Tests.** `tests/test_skills.sh`'s `SKILLS` gains `next`;
+  `tests/test_standards.sh`'s `CHECK_ORDER` gains `plans` after
+  `landing`; `tests/test_install_doc.sh`'s paths gain `guardrails/next`.
+  New: `tests/test_next.sh` holds the script, `tests/test_plans.sh` holds
+  the words.
+
+### The kit's own plans
+
+Each of plans 1 to 9 in `PLAN.md` gets its state line under its title,
+landed on `main` at the commit the next plan was written on (plan 1 at
+`e9f257c`, plan 2 at `523d208`, and so on, each read from the next plan's
+own "Written on" line) or at its tag's commit for plan 9 (`adacda4`),
+with the commit's date from `git log -1 --format=%cs`. Plan 10's line says
+agreed, then building as its parts are ticked, then landed in the tick
+commit after the release. `sh next` run at the kit's root then prints
+something true, which is part 6's first check.
+
+## Out of scope
+
+- This machine's loop over every project, which lives in `~/.claude` and
+  comes after the release.
+- Taking `v0.9.0` into ooergolf, artshape-sound or any project, which
+  each do by `INSTALL.md` on the user's word, and moving ooerfish's
+  `docs/` plans into `plans/`.
+- A kept summary file of any kind, and anything that asks a harness about
+  its sessions.
+- A Windows run: nothing here is on one. What stands in is the `dash` run
+  in the tests, and that the script asks for nothing Git for Windows does
+  not bring.
+
+## Parts
+
+- [x] **1. The plan into `PLAN.md`,** as plan 10, with its state line, and
+      the nine before it given theirs. _Check:_ the lines are there, each
+      hash on `main` (`git merge-base --is-ancestor`), and the plan reads
+      as the others do.
+- [x] **2. Tests first,** each seen failing on the kit as it stands
+      (`tests/run next` and `tests/run plans` red), with the fixtures
+      made under `mktemp -d` and never a real checkout:
+      - `test_next_open_plan_prints_its_next_step`: building, part 3 of
+        4, two boxes ticked: the row has `building, 2 of 4`, `next: 3,`
+        and the box's text; the date is the fixture's commit date.
+      - `test_next_agreed_plan_prints_its_first_step`: `agreed, 0 of 3`,
+        `next: 1,`.
+      - `test_next_parked_plan_prints_why`: `parked:` and the why.
+      - `test_next_nothing_open_says_so`: one landed plan: "nothing
+        open", the plan named, "1 plan landed".
+      - `test_next_refuses_a_malformed_state_line_by_name`: a misspelt
+        line, and a plan with none: each refused with the file and title,
+        the line quoted, exit status non-zero, and the other plans in the
+        folder still printed.
+      - `test_next_says_when_the_line_and_the_boxes_disagree`: part 2 of
+        5 written, three boxes ticked: both facts on the line under the
+        row; `agreed` with a box ticked; `building` with every box
+        ticked.
+      - `test_next_reads_plan_sections_too`: a `PLAN.md` of two plans, one
+        landed and one building, with a `# ` line and a box inside a
+        fenced block: one row, "1 plan landed", and the fenced lines not
+        read.
+      - `test_next_counts_a_dropped_box_apart`: `[-]` out of m and said as
+        dropped; a box indented under another not counted.
+      - `test_next_says_where_the_plan_is`: on a branch, the row says so
+        and that it is not on the default; on the default with no branch
+        differing, "no branch is at work on it"; with a branch differing,
+        that branch named.
+      - `test_next_finds_what_tidy_would`: on `tests/make-leftovers`'s
+        project, each thing by tidy's word: `merged` merged, `squashed`
+        and `unmerged` not merged by ancestry, one stash, the uncommitted
+        change, `wt-done` clean and merged, `wt-locked` in use,
+        `origin/landed` merged, `origin/cloud` not merged by ancestry.
+      - `test_next_calls_stale_by_the_project_file`: `**Stale after:** 2
+        days` and a branch committed three days ago (`GIT_COMMITTER_DATE`)
+        called stale, one of yesterday not; no project file, 30 days and
+        said so.
+      - `test_next_says_what_landed_since_the_last_tag`: a tag and two
+        commits after it, "2 commits since v0.1.0" with their summaries;
+        no tag, "no tag yet".
+      - `test_next_reads_the_default_branch_and_not_main`: a remote whose
+        default is `trunk`, judged against it.
+      - `test_next_writes_nothing`: the tree's files, the refs, the stash
+        list and the index unchanged by a run, by fingerprint before and
+        after.
+      - `test_next_runs_under_dash`: the open-plan and leftovers fixtures
+        under `dash`, skipped with 77 where there is none.
+      - `test_next_forms_in_the_check_are_the_ones_the_script_takes`: each
+        `State:` line of the code block in `checks/plans.md` accepted, and
+        `State: done.` refused: the check and the script held equal.
+      - `test_plans_rule_names_the_place_and_the_check`: _Before building_
+        names `plans/` and `checks/plans.md`; _Reporting_ has a bullet
+        starting "A report ends with the next step" that names the state
+        line; the table's order has `plans` after `landing`.
+      - `test_plans_skills_say_the_same_thing`: the feature and guardrails
+        skills write to `plans/`; the feature skill ticks there and names
+        `checks/plans.md`; the land skill sets the line to landed in its
+        clear-up step; the tidy skill runs the script and names a plan
+        "no branch is at work on"; the `next` skill says it writes
+        nothing and runs `guardrails/next`.
+      - `test_plans_template_and_installer_name_the_script`: the template's
+        _Commands_ has `next`; `INSTALL.md` names `guardrails/next` in
+        _Installing_ and _Updating_, and says `plans/` is not written.
+
+      _Check:_ `tests/run next` and `tests/run plans` red first, every
+      function failing for the reason its name gives.
+
+- [x] **3. The script.** `next` at the kit's root, executable, header
+      saying what it is for and what would go wrong without it, each
+      section a function, the plan parser in one awk program. _Check:_
+      `tests/run next` green under `sh` and `dash`; each test
+      mutation-checked (a fault put in the script, the test seen to name
+      it, the fault taken out), the mutations listed here when done.
+
+      Mutation checks, each put into `next`, the test seen to name it,
+      and taken out again:
+      - a ticked box counted open: `building, 1 of 3` not said
+      - the fence flag dropped: `Not a heading` said
+      - a dropped box counted in m: `2 of 4` where `1 of 3` was held
+      - `parked` taken with nothing after it: survived, until a bare
+        `State: parked` joined the refusals test; then refused by name
+      - the disagreement line printed for every plan: "the state line
+        says" said where it should not be
+      - `is-ancestor` inverted: `branch old: merged`
+      - `, stale` on every branch: a branch of yesterday called stale
+      - the locked worktree's judgement swapped: both worktree tests
+      - the tag's commits counted from the wrong side: `2 commits since`
+        not said
+      - `git status` in place of `diff-index`: survived while
+        `GIT_OPTIONAL_LOCKS=0` stands, since git then skips the index
+        refresh; with both gone, `test_next_writes_nothing` names
+        `.git/index`
+      - the folder name's padding dropped: survived, until the first
+        line was held to the name padded to 16 columns
+
+      One case added, since the fixture's locked worktree is changed as
+      well as locked: built with `FIXTURE_BREAK=locked`, it reads
+      `in use (changed in the last hour)`. The script runs in 0.7 s on
+      this repository.
+- [x] **4. The check and the skill.** `checks/plans.md` and
+      `skills/next/SKILL.md`. _Check:_ `tests/run` green with
+      `PRETTIER=~/projects/artshape-game-template/node_modules/.bin/prettier`,
+      the checks, skills, standards and format tests included.
+- [x] **5. The rules, the four skills, the template, the installer, the
+      README,** and this kit's `AGENTS.md`, as _What else changes_ says.
+      _Check:_ `tests/run` green; each `test_plans_*` mutation-checked;
+      every file touched read through for what it says and in the house
+      voice.
+
+      Mutation checks: each phrase `tests/test_plans.sh` holds was taken
+      out of its file, the test seen to name it, and put back. Two
+      phrases appear twice, `no branch is at work on` in the tidy skill
+      and `plans/` in the guardrails skill, and both copies had to go
+      before the test failed. Read through afterwards: two paragraphs of
+      `INSTALL.md` rewrapped, and `AGENTS.md`'s _What is not held_ given
+      the script on Windows.
+- [x] **6. Trial.**
+      - `sh next` at the kit's root, in this worktree and in the main
+        checkout: plan 10 the one open plan, nine landed, the branch and
+        worktree named, the one commit since `v0.8.0`. Kept for the
+        hand-back as printed.
+      - The script over every git project under `~/projects`, read only,
+        timed, with each project's tree, refs and stash list
+        fingerprinted before and after and seen unchanged; what it says
+        of artshape-sound's `PLAN.md` (refused, no state line: true until
+        that project takes the kit in) and of ooergolf's checkout.
+      - The `next` skill followed by a builder agent on the cheaper
+        model in a throwaway project made from `tests/make-leftovers`
+        with a `plans/` of one of each state and one refusal: its report
+        read here against the fixture, nothing written by it, and what it
+        had to guess put into the skill.
+      - `INSTALL.md` followed by a builder agent on the cheaper model
+        into a throwaway clone of a real project, from this local kit,
+        as the kit's own _Done, here_ asks of any change to the
+        installer: `guardrails/next` arrives byte for byte and
+        executable, `sh guardrails/next` runs there, and the clone's
+        diff is read against what the file says should have happened.
+
+      _Check:_ the figures and the screens kept for "What plan 10's trial
+      found", and every throwaway folder deleted.
+
+- [ ] **7. Release `v0.9.0`.** The commit, the tag and the pushes, each
+      only on the user's word; then the tick commit that sets plan 10's
+      line to landed.
+
+## Decided
+
+- **A script, not a model, prints the screen,** as the user recommended:
+  the kit's checks are already the project's own scripts, its tests are
+  shell, and a machine can run it over every checkout in one loop. The
+  skill is the agent's reading of its output.
+- **The script lives at the kit's root as `next`,** so a project gets it
+  as `guardrails/next`, one copy at a path every harness and a loop can
+  call, installed and updated like the rules. The other place considered
+  was inside the skill's folder, which the Agent Skills specification
+  allows: that is two copies in a project with both harness folders, at a
+  path that differs by harness.
+- **The grammar lives in `checks/plans.md`,** said once, with the rules
+  and the skills pointing at it, and a test holding the script to the
+  forms the check gives. The other place was the `next` skill alone,
+  which the feature skill would then have to read to write a plan.
+- **Every top-level box counts, and `[-]` is dropped,** read off the
+  user's own plans: ooergolf's two questions above its parts are its
+  "next", and its dropped part 9 is `[-]`. A box whose text says dropped
+  but is still `[ ]` is open to the script, and the skill says so.
+- **The date column is git's,** the last commit touching the plan file,
+  never a date kept by hand, with `uncommitted` where the file has
+  changes.
+- **The state line's `n of m` is held equal to the boxes** by the script,
+  as the rules hold anything said twice, and a disagreement is printed
+  with both facts, not guessed at.
+- **`v0.9.0`**: a check, a skill and a script are added, and the table
+  every project's file points at gains a row.
+
+## Decided by the user, and changed while building
+
+On 2026-10-18 the plan was agreed as written, the three recommendations
+with it: the first open box only on a plan's row, the read-only run of
+tidy being this script, and the nine landed plans given their lines in
+part 1.
+
+Changed while building: part 6 gains a trial of the installer, which the
+kit's own _Done, here_ asks of any change to `INSTALL.md`.
+
+## Open for the user (as written; answered above)
+
+- **The first open box only,** on the plan's row, with the skill reading
+  the rest from the file: recommended, since a plan with ten open boxes
+  would otherwise take the screen. The alternative is every open box, one
+  a line under the row, as the user's sketch listed ooergolf's two.
+- **The read-only run of tidy is this script,** so that the judgement has
+  one implementation and tidy's own find then fetches and judges by tree
+  what the script called not merged by ancestry: recommended. The
+  alternative keeps tidy's find as words of its own, with the script
+  beside it.
+- **The nine landed plans get their lines now,** in part 1, so `sh next`
+  on the kit says something true on the first run: recommended; nine
+  lines, hashes read from the plans themselves. The alternative leaves
+  them, and the script refuses each by name until they are added.
+
+## What plan 10's trial found
+
+Run 2026-10-18, on this machine.
+
+- **On this repository,** in the worktree the work is in: plan 10 the
+  one open plan, `building, 5 of 7`, `next: 6, Trial`, dated
+  `uncommitted`; nine plans landed; the branch merged by ancestry, since
+  its work is not yet committed; the main checkout listed as a worktree,
+  clean and merged; no open PRs; `main: v0.8.0, 1 commit since`, the
+  tick named. 0.7 s, under `sh` and `dash` alike. In the main checkout,
+  on `main` as it stands: the nine plans refused by name, each "no state
+  line under" its title, which is true until this lands; the worktree in
+  use (changed in the last hour); exit 1.
+- **Over every git project under `~/projects`,** forty-eight of them, read
+  only, in one loop: 66 s in all, none over 3 s, and no project's refs,
+  stash list, tree or index moved, by a fingerprint taken before and
+  after each run. Forty-six have no `plans/` and no `PLAN.md`.
+  artshape-sound's `PLAN.md` is refused by name, no state line under
+  its title, true until it takes the kit in, and its screen says what
+  git does: three commits on `main` not pushed, three since `v0.2.0`,
+  each named. ooergolf and ooerfish are clean with no tag; ooergolf's
+  `GUARDRAILS-PLAN.md` is not read, by design, and its screen says it
+  has no `plans/`. Four projects have no remote, and their PRs are said
+  to be not read for that reason. The game template shows four merged
+  `claude/…` branches with their worktrees, which is tidy's to settle.
+- **The installer, fresh, into a throwaway clone of sysmod,** by an
+  agent on the cheaper model, from a throwaway copy of the kit tagged
+  `v0.9.0`: 44 files written and none of the project's touched, the one
+  file it would have written and did not being the project's own
+  `CLAUDE.md`, with the `@AGENTS.md` line first in its report;
+  `guardrails/next` byte for byte with the kit's and executable, checked
+  here; `sh guardrails/next` run in the clone and true: no plans, the
+  filled-in threshold read, 44 files untracked, no tag. Of the fourteen
+  things the agent found unclear in `INSTALL.md`, one was this plan's:
+  the byte-for-byte check did not cover the executable bit, which the
+  check step now names. The rest predate it and are named in the
+  hand-back, not done: the `[updates]` line's answer has stood
+  unbracketed since plan 9, so "replace the bracketed default" has
+  nothing to replace; step 5's "a difference is put right" reads against
+  step 3's filled-in answers; _Before anything_ names files under
+  `guardrails/` that a fresh install does not have yet; and the file
+  never says what the kit's own repo looks like, nor where a hook the
+  project had already might be.
+- **The installer, updating a throwaway clone of ooergolf** from
+  `v0.5.0`, by an agent on the cheaper model, from the same throwaway
+  kit: no hand edit found, the diff shown, and on the yes the rules,
+  eight checks and the two kit-owned skills replaced, `plans.md`,
+  `guardrails/next`, `next` and `tidy` added, `ci.md` removed, the
+  project's own four skills untouched, the record rewritten; every file
+  byte for byte with the kit's, checked here, the script executable;
+  `sh guardrails/next` true in the clone. Four things it had to guess
+  were this plan's, and are now said in _Updating_: the diff step shows
+  the script too, a file neither copy has is no difference, the write
+  step makes the script executable, and the report gives the lines the
+  project's own `AGENTS.md` lacks. Named, not done: the landing
+  questions are read from the project's installed copy, which lacks the
+  third, where the dependency questions are read from the newer kit's;
+  an old answer that no longer matches a reworded question has no rule;
+  and the example folder in _Updating_'s opening is one the record may
+  list as the project's own.
+- **The `next` skill, followed by an agent on the cheaper model** in a
+  throwaway project made from `tests/make-leftovers` with a plan of each
+  state and one with no state line: its report read the screen rightly,
+  the refusal, the question box as the user's, the parked plan, the two
+  plans no branch is at work on, and every branch, worktree and stash by
+  tidy's words, the locked worktree's branch in use with it; nothing was
+  written, by a fingerprint of the project taken before and after. What
+  it had to guess, and what changed because of it:
+  - the screen cut a parked why and a question box at forty characters,
+    losing "release." and the question mark; nothing is cut now
+  - a landed plan naming a commit the repository does not have was
+    counted landed without a word; the commit is checked against the
+    default branch and said
+  - the checkout's own fresh change was not called in use, where a
+    worktree's would be; it is now
+  - `git diff-index` calls a file touched and unchanged changed, since
+    it reads no contents; the tree is read with `git status --porcelain`
+    under `GIT_OPTIONAL_LOCKS=0`, which compares contents and writes no
+    index
+  - the lock's reason, the relative path of a worktree under the
+    project, a branch in use with its worktree, and the newest commits
+    where there is no tag, each now printed
+  - the skill said "a bullet a kind of line" and had none for a third of
+    the lines; said "stopped" of an agreed plan that is waiting on its
+    first question; sent the reader to the file only for a refusal, when
+    the check beside a box is only in the file; and had its report lead
+    two ways at once. Each is said now, with the form a refused plan's
+    boxes give, and tidy's in-use command is the script's `-mmin -60`,
+    since one shell's `find` refused `-newermt`.
+
+After those changes, run again on the same fixture: the question box in
+full with its question mark, the parked why to its full stop, the landed
+plan said to name a commit `main` does not have, the checkout's fresh
+change called in use, `in use (locked): a session at work`, the locked
+worktree's branch in use with it, and the three newest commits under
+"no tag yet". `tests/run` is 72 green with prettier, under `sh` and
+`dash`; `sh next .` on this repository takes 1.2 s, most of it `gh`.
+Not verified: the `sh` Git for Windows installs, and `gh` against a
+remote that refuses it.

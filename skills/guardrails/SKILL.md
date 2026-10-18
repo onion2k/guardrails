@@ -119,10 +119,13 @@ projects' manifests where they can be reached, not only the package's
 own list of who uses it; where the two disagree, say so, as a finding in
 the package.
 
-Write the order as a plan in a file the project file points to: one box a
-check, the check that proves each beside it. Then stop, and wait for the
-user to agree it or change it. Where the harness has a plan mode, the
-survey and the plan are made in it, and its approval is the agreement.
+Write the order as a plan in `plans/<name>.md`, as
+`guardrails/checks/plans.md` gives: one box a check, the check that
+proves each beside it, its state line agreed with the date once the user
+agrees it. Then stop, and wait for the user to agree it or change it.
+Where the harness has a plan mode, the survey and the plan are made in
+it, its approval is the agreement, and the plan is then copied into
+`plans/`.
 
 ## 4. Add one check at a time
 
@@ -139,7 +142,7 @@ For each box, in order:
    figures' home under _Gates_, and loses its line under _What is not
    held_. The full check runs it.
 4. **Green.** The quick check passes, and the full check as it now stands.
-5. **Ticked** in the plan.
+5. **Ticked** in the plan, and the state line moved.
 
 A gate's baseline is written on a quiet machine, twice, and only where the
 two agree, with the wobble measured and written beside the tolerance. On a

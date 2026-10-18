@@ -34,8 +34,10 @@ the refs there and from the host, saying the refs may be out of date. Do
 not run `git merge-tree` either: it writes objects into the repository,
 unreferenced and harmless, but written. A branch that ancestry calls
 unmerged is then reported as _not merged by ancestry_, since it may have
-been squashed in. Everything below is judged against the default branch, local or
-remote as the thing is.
+been squashed in. The read-only run is what `sh guardrails/next` prints,
+run first as the find's survey; the fetch and the judgement by tree then
+settle what it called _not merged by ancestry_. Everything below is
+judged against the default branch, local or remote as the thing is.
 
 ## 2. Find, read only
 
@@ -51,6 +53,11 @@ remote as the thing is.
 - **The remote:** its branches besides the default, and the open PRs,
   with their age, author, and whether their checks are green. On GitHub,
   `gh pr list --state open`.
+- **The plans:** what `sh guardrails/next` printed of them. A plan whose
+  state line says agreed or building, on the default branch, with no
+  branch holding a different copy (the screen says "no branch is at work
+  on it"), is work whose branch merged or is gone: it landed without its
+  line moved, or stopped.
 
 ## 3. Say what each is
 
@@ -70,7 +77,7 @@ Each thing found is one of:
   update, is older than the project's threshold.
 - **in use:** a worktree that is locked, or a tree with a file holding an
   uncommitted change made in the last hour (files only:
-  `find <tree> -type f -newermt '-60 minutes'`, leaving out `.git` and
+  `find <tree> -type f -mmin -60`, leaving out `.git` and
   what is ignored). A checkout's own age does not count: a
   tree just cloned is not in use. Something in use may be a session still
   at work. A branch checked out in a worktree that is in use is in use
@@ -90,6 +97,8 @@ Group what was found, and give a recommendation for each group:
 - **uncommitted:** park it, or leave it.
 - **stale PRs:** close each with a comment saying why, or keep it.
 - **in use:** leave it.
+- **a plan no branch is at work on:** set its line to landed, at the
+  commit its last part landed in, or to parked with why.
 
 PRs in a repo with no checkout here are listed with their links and left:
 they are checked and closed in their own repo.
@@ -114,6 +123,8 @@ word for that item.
   it stopped, and push it only on the user's word. A stash is parked the
   same way (`git stash branch`). Nothing is thrown away to be tidied.
 - **Land:** hand it to the land skill.
+- **A plan's line:** moved to landed or parked as the user said, in a
+  commit of its own.
 - **Close a PR:** with a comment saying why, on GitHub `gh pr close
 <number> --comment "..."`, never deleting its branch unless that too
   was agreed.

@@ -128,10 +128,14 @@ holds it: copied into the file, it is soon wrong.
   one. Where the measurements then say otherwise, stop and ask again.
 - **A plan is written to be built by someone else:** a cheaper model, a
   fresh session or another agent. It names the files and interfaces, what
-  is out of scope and the check that proves each part, and is kept in a
-  file. Its parts are a checklist, one box a part in the order they are
-  built, and a box is ticked as its part lands with its check green, so
-  where the work stands can be read off the file at any time.
+  is out of scope and the check that proves each part, and is kept in
+  `plans/<name>.md`, named for the work, on the work's branch. Under its
+  title a line says where it stands, agreed, building, landed or parked,
+  in the form [checks/plans.md](checks/plans.md) gives. Its parts are a
+  checklist, one box a part in the order they are built, and a box is
+  ticked as its part lands with its check green and the line moved with
+  it, so where the work stands can be read off the file at any time, and
+  off every plan in a project by the `next` skill.
 - **Asked for ideas, options or a plan, give that and stop.** Nothing is
   built or changed until the user says to go ahead.
 - **What was asked, or the plan agreed, is the scope.** Something else
@@ -179,28 +183,29 @@ What the definition of done leans on, each in `checks/`, in about the order
 a project takes them on. A check is added one at a time, and trusted once
 it has been seen to fail what it is for.
 
-| Check                                          | What it holds                                                       |
-| ---------------------------------------------- | ------------------------------------------------------------------- |
-| [quick check](checks/quick-check.md)           | what runs before a commit, and in what order                        |
-| [secrets](checks/secrets.md)                   | no key, token or password in the tree or its history                |
-| [formatting](checks/formatting.md)             | one formatter deciding every file it should                         |
-| [lint](checks/lint.md)                         | mistakes the compiler lets through, and the rules a linter can hold |
-| [code scanning](checks/code-scanning.md)       | data from outside reaching a query, a shell or the page unchecked   |
-| [structure](checks/structure.md)               | what may import what                                                |
-| [dependencies](checks/dependencies.md)         | installs exact, advisories seen, licences allowed, nothing unused   |
-| [unit](checks/unit.md)                         | the thing's working parts, headless and seeded                      |
-| [test API](checks/test-api.md)                 | a scene set, time stepped, state read back; end to end              |
-| [invariants](checks/invariants.md)             | what must always be true, however it got there                      |
-| [fuzzer](checks/fuzzer.md)                     | what a user can do, done at random, rules checked                   |
-| [determinism](checks/determinism.md)           | the same seed giving the same run                                   |
-| [persisted shapes](checks/persisted-shapes.md) | every shape ever saved, still loading                               |
-| [bounded](checks/bounded.md)                   | what is kept staying under its ceiling                              |
-| [gates](checks/gates.md)                       | a figure held to a budget and a baseline, both ways                 |
-| [look](checks/look.md)                         | what the user sees, held to pictures looked at                      |
-| [headers](checks/headers.md)                   | what a served page tells the browser to refuse                      |
-| [verification](checks/verification.md)         | that each check reaches what it says it does                        |
-| [landing](checks/landing.md)                   | the hooks, what a PR carries, and branches left behind              |
-| [mutation](checks/mutation.md)                 | a test seen to fail when its bug is put back, and survivors counted |
+| Check                                          | What it holds                                                             |
+| ---------------------------------------------- | ------------------------------------------------------------------------- |
+| [quick check](checks/quick-check.md)           | what runs before a commit, and in what order                              |
+| [secrets](checks/secrets.md)                   | no key, token or password in the tree or its history                      |
+| [formatting](checks/formatting.md)             | one formatter deciding every file it should                               |
+| [lint](checks/lint.md)                         | mistakes the compiler lets through, and the rules a linter can hold       |
+| [code scanning](checks/code-scanning.md)       | data from outside reaching a query, a shell or the page unchecked         |
+| [structure](checks/structure.md)               | what may import what                                                      |
+| [dependencies](checks/dependencies.md)         | installs exact, advisories seen, licences allowed, nothing unused         |
+| [unit](checks/unit.md)                         | the thing's working parts, headless and seeded                            |
+| [test API](checks/test-api.md)                 | a scene set, time stepped, state read back; end to end                    |
+| [invariants](checks/invariants.md)             | what must always be true, however it got there                            |
+| [fuzzer](checks/fuzzer.md)                     | what a user can do, done at random, rules checked                         |
+| [determinism](checks/determinism.md)           | the same seed giving the same run                                         |
+| [persisted shapes](checks/persisted-shapes.md) | every shape ever saved, still loading                                     |
+| [bounded](checks/bounded.md)                   | what is kept staying under its ceiling                                    |
+| [gates](checks/gates.md)                       | a figure held to a budget and a baseline, both ways                       |
+| [look](checks/look.md)                         | what the user sees, held to pictures looked at                            |
+| [headers](checks/headers.md)                   | what a served page tells the browser to refuse                            |
+| [verification](checks/verification.md)         | that each check reaches what it says it does                              |
+| [landing](checks/landing.md)                   | the hooks, what a PR carries, and branches left behind                    |
+| [plans](checks/plans.md)                       | every plan saying where it stands, read by a script, with what comes next |
+| [mutation](checks/mutation.md)                 | a test seen to fail when its bug is put back, and survivors counted       |
 
 ## Verifying
 
@@ -302,6 +307,9 @@ How a project is held to these, check by check, is in
   do, and stands by itself for a reader who sees nothing else. It says what
   is committed and pushed, what they will see if they run it now, and whose
   uncommitted work is in the tree.
+- **A report ends with the next step,** and the plan's state line is
+  moved before the report is written, so that the file and the chat say
+  the same.
 - **A question is asked once, as a question,** with a recommendation, in a
   message that also carries the work that did not wait on it.
 

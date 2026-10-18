@@ -102,6 +102,12 @@ checking that what it held is in what landed. A branch that holds
 anything that did not land is kept, and said. Then run the tidy skill's
 find (its steps 1 to 3) and say anything else it shows.
 
+The plan the work was built to has its state line set to landed, on the
+default branch at the commit the work landed in (the merge commit, or the
+last commit pushed) with the date, as `guardrails/checks/plans.md` gives,
+in a tick commit of its own, since the commit that landed cannot name
+itself.
+
 ## 8. Report
 
 - **Outcome:** where the work is now: pushed, a PR open (its link), merged,
@@ -111,3 +117,4 @@ find (its steps 1 to 3) and say anything else it shows.
 - **The full check:** its result, and the commit it ran on.
 - **Not done,** and why: a step waiting on the user's word, a refusal, a
   red full check.
+- **Next:** what comes next, in a line, from the plan's open boxes.
