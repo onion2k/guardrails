@@ -1360,3 +1360,219 @@ Run 2026-10-17 by two agents.
     before its branch
   - the table's columns are named
 
+
+# Plan 8: the mutation check gets an instrument
+
+Written 2026-10-18, on `8635746` (`v0.6.0`), on the strongest model to hand,
+in plan mode. Nothing is built until the user says go.
+
+## Aim
+
+Point 8 of the definition of done, the mutation check, is the only point
+held by the agent's word: a line in a report saying the bug was put back
+and the test failed. Every other point rests on something that ran.
+`checks/mutation.md` names a mutation testing tool as something that "can
+stand beside it" and "is worth running now and then", which by the kit's
+own rules is a check that never runs: no owner, no cadence, no figure.
+
+The kit is used only in TypeScript projects today (the user, 2026-10-18),
+so the advice can name Stryker as the tool and give its commands, with the
+family (mutmut, cargo-mutants, PIT) named once for anyone else. Naming a
+tool is what the check files already do (gitleaks, prettier, actionlint);
+`GUARDRAILS.md` stays free of names.
+
+Looked up 2026-10-18:
+
+- `@stryker-mutator/core` and `@stryker-mutator/vitest-runner` are at
+  10.0.0 (2026-08-14), Apache-2.0, node >= 22, vitest >= 2.
+- Incremental mode (`--incremental`, `reports/stryker-incremental.json`)
+  diffs mutated and test files against the last report, not git. The
+  per-change form is `--incremental --force --mutate <file>`, which reruns
+  only the named files and keeps the rest of the report. Vitest reports
+  test locations, so changed tests are seen. Sources:
+  stryker-mutator.io/docs/stryker-js/configuration/ and
+  stryker-mutator.io/docs/stryker-js/incremental/.
+- `thresholds.break` fails the run under a score; `null` by default, and
+  `high`, `low` and `break` are given together. The json reporter writes
+  `reports/mutation/mutation.json`, each mutant with a status: Killed,
+  Survived, NoCoverage, Timeout, RuntimeError, CompileError, Ignored.
+
+A guess, to be tried in part 4: that the config in the check's smallest
+form runs as written against a vitest 3 project. Nothing here has been
+tried.
+
+## The design
+
+The hand check stays as point 8: Stryker's mutants are generic (an
+operator flipped, a branch dropped) and the bug a test was written for is
+usually not one of them. What changes is that the tool joins it as a gate,
+and the report line of the hand check becomes something a reader could
+redo.
+
+**`checks/mutation.md`, rewritten in the same four sections:**
+
+- _What it holds_: the hand check, once per new test, as now; and, where
+  the project has the tool, the suite's survivors, a count per file held
+  exactly. A survivor is a mutant with status Survived or NoCoverage.
+  Two runs: in the pass, over the files the change touched; the whole
+  suite in the full check, or on a schedule the project file names where
+  the full check cannot carry it.
+- _Its smallest form_: the report lines, each naming what was changed
+  (the line, or the command) so a reader could put the bug back
+  themselves; then `stryker.config.mjs` (vitest runner, `mutate` over
+  the logic and not the page, `incremental`, the json reporter,
+  `thresholds.break` as the budget), a judging script in the shape of
+  `gates.md`'s (reads the json report, counts survivors per file,
+  compares exactly with `mutation-baseline.json`, with unit tests), and
+  the commands: `mutate` (the whole suite, judged), `mutate:update` (the
+  baseline written again, for a change meant to move it, said in the
+  commit), and the per-change run written out as its two commands,
+  `stryker run --incremental --force --mutate` over the files the change
+  touched and the judge over the same files.
+- _Seen failing_: the hand check as now. The tool: a test that asserts
+  nothing added on purpose, seen as survivors in its file; the judgement
+  handed counts over, under and equal to the baseline.
+- _Where it cannot apply_: the picture is not mutated, only the logic the
+  structure rules keep apart from it, and the project file says so. A
+  language with no tool: the hand check alone, said under _What is not
+  held_. A suite too slow for the full check: the whole-suite run on a
+  schedule the project file names, and the per-change run still in the
+  pass. The kit itself: bash, no tool.
+
+**`checks/gates.md`:** survivors join the list of figures a gate holds,
+as a count held exactly, pointing at `mutation.md`.
+
+**`GUARDRAILS.md`:** point 8 gains one clause: where the project has a
+mutation gate, it runs in the pass over the files the change touched. The
+table row's words become "a test seen to fail when its bug is put back,
+and the suite's survivors counted". The file stays at its length.
+
+**`templates/AGENTS.md`:** `[mutate]` under _Commands_; a line under
+_Gates_ for survivors, per file, baseline file named, held exactly; and
+the _What is not held_ bullet gains the case of no mutation tool yet.
+
+**`skills/feature/SKILL.md` and `skills/bug/SKILL.md`:** the verify
+step's mutation check bullet gains the tool's per-change run, where the
+project has one, with its figures kept for the report.
+
+**`README.md`:** a `v0.7.0` row in the release table.
+
+## Out of scope
+
+- A new check file or table row.
+- Any change to `INSTALL.md` or the install questions.
+- Adding Stryker to the game template itself: that is the template's own
+  change, to its definition of done, after the kit is released.
+- Other harnesses.
+
+## Parts
+
+- [x] **1. The plan into `PLAN.md`,** as plan 8, with the lookups above
+      and their sources.
+- [x] **2. Tests first,** in `tests/test_mutation.sh`, each seen failing
+      on the kit as it stands: - `mutation.md` no longer says "now and then", names the two
+      survivor statuses, and says the count is held exactly - `mutation.md` says the per-change run is over the files the
+      change touched, and that a reader could put the bug back
+      themselves from the hand check's line - `gates.md` points at `mutation.md` - the template's _Gates_ and _Commands_ name mutants and `mutate` - the feature and bug skills' verify step names the mutation gate - `GUARDRAILS.md`'s point 8 names the gate
+
+      *Check:* each red first, then green with the edits.
+
+- [x] **3. The edits** to the seven files above. _Check:_ `tests/run`
+      green, each new test mutation-checked by hand (the words taken out,
+      the test seen failing, restored) and the lines in `PLAN.md`.
+
+      Mutation checks, each seen failing alone and restored:
+      - names its figure: "held exactly" turned to "kept", "Survived" and
+        "NoCoverage" each turned to another word, "now and then" put back
+      - runs on what the change touched: "files the change touched" cut
+        to "files", the hand-check phrase turned to "redo it"
+      - gates point at it: `mutation.md` turned to another file's name
+      - template names it: `[mutate]` and "Surviving mutants" each taken out
+      - skills run the gate: "mutation gate" taken out of each skill
+      - rules name the gate: "mutation gate" taken out of point 8
+
+- [x] **4. Trial,** by a builder agent on the cheaper model, in a
+      throwaway copy of `~/projects/artshape-game-template` (commit
+      `4c790eb`), never its checkout: - take in `@stryker-mutator/core@10.0.0` and the vitest runner,
+      write the config from the check's smallest form, run the suite,
+      and time it on a quiet machine: how many mutants, how many
+      survived, the score, the seconds - the judging script from the smallest form, with its unit tests - the instrument trusted: a test that asserts nothing added, seen
+      as a survivor in the json report and the judgement; removed - the per-change run over one file, timed, seen to keep the rest
+      of the report - the check's commands as written seen to be the ones that work,
+      and any that are not put right in the check
+
+      *Check:* the figures, kept for `PLAN.md`'s "What plan 8's trial
+      found", and the copy deleted.
+
+- [ ] **5. Release `v0.7.0`.** The commit, the tag and the pushes, each
+      only on the user's word.
+
+## Open for the user
+
+- **Where the whole-suite run lives:** in the full check where the trial
+  measures it under a few minutes (recommended, with the figure), else on
+  a schedule the project file names, such as before a release. The check
+  says both, and the figure from the trial decides the recommendation.
+- **The commands' names:** `mutate` and `mutate:update` (recommended),
+  matching `perf` and `perf:update` in `gates.md`; the per-change run is
+  two commands written out, since the files are its argument.
+- **`v0.7.0`** as the release, since a check's advice changes shape.
+
+## What plan 8's trial found
+
+Run 2026-10-18 by a builder agent on the cheaper model, in a copy of
+`artshape-game-template` at `4c790eb`, with load average 3.3 at the
+start. The figures were read off its logs here before anything was
+changed from them.
+
+- **Taking the tool in:** 6 s, 157 packages, node_modules from 112M to
+  168M. A dependency to be taken in on purpose, in a commit of its own.
+- **The whole suite,** nine logic files once the page, the scene, the
+  meshes, the matrix, the debug glue and the keyboard were left out: 722
+  mutants, 374 killed, 25 timed out, 297 survived, 26 not covered, score
+  55.26, in 53 s wall over eleven runner processes. Repeated on an
+  unchanged tree with the incremental file: 3 s. So the whole suite goes
+  in the full check, and the per-change run is the pass's.
+- **The baseline:** 323 survivors over nine files, `autopilot.ts` 169 of
+  them, `physics.ts` none. The report's keys are relative paths, as a
+  diff gives them.
+- **Seen failing:** with `sled.test.ts`'s assertions taken out, the
+  per-change run (7.3 s) took `sled.ts` from 17 survivors to 21, the
+  judge printed `src/sled.ts: 17 -> 21` and exited 1, and every other
+  file's count was unchanged in the report. Restored: 17, judge green.
+  Only four more survived, since the determinism, game and autopilot
+  tests cover the sled too: the check's remark that a hollow test added
+  is not the fault held.
+- **`thresholds.break`** fails the run as the docs say, with the score
+  taken over the whole report, not the files mutated in this run.
+
+What the check said and did not hold, each put right in it:
+
+- **`break: 60`** failed this game on a tree equal to its baseline, at
+  55.26. The check now says break is set below the first run's score and
+  raised as the baseline comes down; the example says 50.
+- **`mutate:update` as "stryker run, then write"** needs Stryker's exit
+  code ignored when the score is under break, and `;` in an npm script
+  does not hold on Windows. The check now has the update write the
+  baseline from the last run's report, with no run of its own.
+- **`npx tsx`** is not how the project runs a script. The check now says
+  the main is run the way the project runs its scripts, apart from the
+  judging functions so that a test can import them without running it,
+  and the per-change judge is `npm run mutate:judge -- <files>`.
+- **`--incremental` on the command line** is redundant with the config;
+  dropped. **`--force`** was not needed to see the fault, since Stryker's
+  own diff saw the changed test file; kept, with why.
+- **The judge's default** of the report's files missed a file deleted
+  since the baseline; the check's default is now the files of both.
+- **`!src/**/*.test.ts`** matched nothing in a project with its tests in
+  `test/`, and Stryker warned; the example glob is gone.
+- **What is committed** was not said: the baseline is, `reports/` is
+  ignored.
+- **The failing output** is long: every survivor with every test that
+  ran. The check says to read the judge's lines first.
+
+Not done: the judge's five unit tests, green in the copy, were not
+mutation-checked; nothing was run on Windows; the full `npm run check` of
+the copy was not run with the new scripts in it. Adding the gate to the
+template itself is the template's own change, out of scope here.
+

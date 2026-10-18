@@ -23,6 +23,7 @@ file a tool holds it in.
     [each gate]            [what it holds the project to]
     [format]               the formatter, writing: by hand, never by the hook
     [CI]                   [where the full check runs besides this machine, and on what]
+    [mutate]               the tests' surviving mutants, per file, held to the baseline under Gates (or: no mutation tool yet)
     [audit]                the dependencies' known advisories, at the threshold under Gates
     [updates]              [how updates arrive: a bot for security updates only, versions by hand monthly]
 
@@ -74,6 +75,8 @@ For anything new, check what it does:
   exception is written with why, and looked at again within 90 days]
 - **Allowed licences:** [MIT, BSD-2-Clause, BSD-3-Clause, ISC, Apache-2.0,
   0BSD, Unlicense; anything else asked about by name]
+- **Surviving mutants:** [per file, in mutation-baseline.json, held
+  exactly; or: no mutation tool yet, said under What is not held]
 - **Accepted findings:** [where the secret scan's and code scanning's
   accepted findings are kept, each with its reason: none yet]
 
@@ -89,6 +92,8 @@ before and after, a picture in ...]. The pass is [full check] green, and
 
 - [Each rule in GUARDRAILS.md the project has nothing for, or does not yet
   meet, with what stands in for it.]
+- [A mutation tool, where the project has none yet: the hand check alone
+  stands in.]
 - [What only a person, or another machine, can check.]
 
 ## How a change lands

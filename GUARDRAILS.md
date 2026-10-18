@@ -168,7 +168,9 @@ tests; the pass is the feature's, once, before it lands on main.
    written again and every one looked at for what it is there to show.
 8. **New tests mutation-checked.** Put the bug back, watch the test fail,
    restore it. A test that survives its mutation proves nothing. Where a
-   test could not be seen failing first, this stands in for it.
+   test could not be seen failing first, this stands in for it. Where the
+   project has a mutation gate, it runs in the pass over the files the
+   change touched.
 9. **Anything not verified is said plainly.** Said a second time, it is put
    to the user as something to do, or the means to check it is built.
 
@@ -200,7 +202,7 @@ it has been seen to fail what it is for.
 | [verification](checks/verification.md)         | that each check reaches what it says it does                        |
 | [CI](checks/ci.md)                             | workflows given least access, pinned to what was read               |
 | [landing](checks/landing.md)                   | the hooks, the remote's protection, and branches left behind        |
-| [mutation](checks/mutation.md)                 | a test seen to fail when its bug is put back                        |
+| [mutation](checks/mutation.md)                 | a test seen to fail when its bug is put back, and survivors counted |
 
 ## Verifying
 

@@ -51,7 +51,8 @@ reach, and add a test for each that applies.
 - The new test passes, and the full check is green.
 - The fuzzer over the seeds the project file names for the pass, clean.
 - **Mutation check:** take the fix out, see the new test fail, put it
-  back.
+  back. Where the project has a mutation gate, run it over the files the
+  change touched, and keep its figures for the report.
 - If the bug was in something seen, a picture of it fixed, looked at.
 
 ## 6. Report

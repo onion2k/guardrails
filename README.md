@@ -180,6 +180,7 @@ it has, which is how a hand edit is told from the kit's own.
 | `v0.4.0` | Dependencies: a rule that one is taken in on purpose, and a check for exact installs, advisories, licences, unused packages and updates.    |
 | `v0.5.0` | Security: secrets kept out of the tree, code scanning, CI held to least access and pinned actions, and a served page's headers.             |
 | `v0.6.0` | Nothing left behind: the tidy skill finds what work left anywhere, says what each is, and settles it on the user's word.                    |
+| `v0.7.0` | Mutation: the hand check's line says what was changed, and a mutation tool's survivors are a gate, counted per file and held exactly.       |
 
 ## Left out on purpose
 

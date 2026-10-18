@@ -124,7 +124,9 @@ Both kinds:
   pass, clean. A failure prints a replay; fix the cause, never the check.
 - **Mutation check.** Break the feature, or put the bug back, see the new
   tests fail, then restore it. A test that survives its mutation proves
-  nothing: make it sharper until it fails.
+  nothing: make it sharper until it fails. Where the project has a
+  mutation gate, run it over the files the change touched, and keep its
+  figures for the report.
 
 Something the user sees, as well:
 

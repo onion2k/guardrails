@@ -16,7 +16,8 @@ Each figure two ways:
   is as much a change as slower
 
 A figure that does not wobble, such as the size of a build that is the
-same bytes every time from the same lockfile, is held exactly. One that
+same bytes every time from the same lockfile, or the count of mutants the
+tests let through (see [mutation.md](mutation.md)), is held exactly. One that
 does is held to a tolerance wider than its wobble and narrower than what
 the gate is there to catch, with the wobble measured and written beside it: how many runs,
 warmed up, on what machine, highest over lowest. A figure too small to
