@@ -36,6 +36,41 @@ written for. It runs twice:
 - **over the whole suite,** in the full check where it is quick enough,
   else on a schedule the project file names, such as before a release
 
+The tool's work is the count of mutants times the tests that reach each,
+and a slow test under a file of many mutants is run once for every one of
+them. A world generator of a few hundred mutants, tested by building whole
+worlds at a second or two each, is a run of a day, and the tool reports it
+as thousands of tests before it starts. The run is sized before it is
+started, and bounded after:
+
+- **Read the dry run before the mutants.** Stryker runs the suite once
+  first and says how many tests it ran, in how long, and how many mutants
+  it made. Those lines multiplied are the ceiling, and the progress
+  reporter's estimate in the first minute is the figure. A run that would
+  take longer than the budget is stopped, not waited on.
+- **The budget is in the project file,** beside the command: the
+  per-change run inside the pass, a minute or so a file, and the whole
+  suite inside the full check, ten minutes or so, else on the schedule the
+  project file names. A run that grew is made quick before it is given up,
+  as any check is.
+- **A test under mutation is quick.** `coverageAnalysis: 'perTest'`, the
+  default, runs only the tests that reach a mutant, so what is multiplied
+  is the tests of that file, and they are made quick first: a generator is
+  tested on the smallest scene that shows the rule, a world of a few cells
+  and not the game's, and a slow fixture is built once and read many times.
+  A test that cannot be made quick is a fault in the test, and is fixed
+  there before the tool is turned down.
+- **A file that cannot be brought inside the budget** is left out of
+  `mutate` by name, with its reason beside it in the config, and the
+  project file says so under _What is not held_: the hand check alone
+  holds it. A file left out is a gap the project knows about, and is
+  looked at again when its tests are made quick.
+- **A Timeout is not a kill.** Stryker counts a mutant that runs past
+  `timeoutMS` as killed, so a slow test under a mutant that loops reads as
+  a test that caught it. The report's Timeout count is read beside its
+  survivors, and a file whose mutants time out is one whose tests are too
+  slow, not one whose tests are sharp.
+
 ## Its smallest form
 
 In the report, each line says what was changed, the line or the command,
@@ -125,9 +160,9 @@ to the baseline.
 - **A language Stryker does not reach** has mutmut, cargo-mutants or PIT
   for the same figure. Where there is none, the hand check alone stands in,
   and the project file says so under _What is not held_.
-- **A suite too slow for the full check** runs the whole suite on a
-  schedule the project file names, and the run over the files the change
-  touched stays in the pass.
+- **A suite too slow for the full check,** once its tests are quick and
+  the slow files are named, runs whole on a schedule the project file
+  names, and the run over the files the change touched stays in the pass.
 - **Putting the bug back is not possible** (a fault in a dependency, a race
   that cannot be forced): the report says so, and says what was done
   instead.
