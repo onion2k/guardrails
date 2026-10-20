@@ -22,7 +22,7 @@ file a tool holds it in.
     [full check]           all of it: the quick check, then every gate (~N s)
     [each gate]            [what it holds the project to]
     [format]               the formatter, writing: by hand, never by the hook
-    [mutate]               the tests' surviving mutants, per file, held to the baseline under Gates (or: no mutation tool yet)
+    [mutate]               the tests' surviving mutants, per file, held to the baseline under Gates (~N min whole, ~N s a file; or: no mutation tool yet)
     [audit]                the dependencies' known advisories, at the threshold under Gates
     [updates]              by hand, monthly, a commit each, the audit first
     sh guardrails/next     where every plan in plans/ stands, and what comes next

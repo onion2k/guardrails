@@ -51,3 +51,18 @@ test_mutation_rules_name_the_gate() {
   awk '/^8\. \*\*/{on=1} /^9\. \*\*/{on=0} on' "$KIT/GUARDRAILS.md" | tr '\n' ' ' | grep -q 'mutation gate' \
     || { echo "GUARDRAILS.md's point 8 does not name the mutation gate"; return 1; }
 }
+
+test_mutation_check_bounds_the_run() {
+  # The run's size is mutants times the tests that reach each, and a slow
+  # test under a file of many mutants is a day's run: the check says the
+  # run is sized before it is started, what brings it down, when a file is
+  # left out, and that a mutant timing out is not one killed.
+  local bad=0 flat phrase
+  flat="$(tr '\n' ' ' <"$KIT/checks/mutation.md" | tr -s ' ')"
+  for phrase in 'times the tests' 'dry run' 'smallest scene' 'left out of `mutate`' 'Timeout' 'not a kill'; do
+    grep -q -- "$phrase" <<<"$flat" || { echo "checks/mutation.md does not say $phrase"; bad=1; }
+  done
+  mutation_section templates/AGENTS.md Commands | grep 'mutate' | grep -q '~N' \
+    || { echo "the template's mutate command does not say how long the run takes"; bad=1; }
+  return $bad
+}

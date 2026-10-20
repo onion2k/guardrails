@@ -186,17 +186,18 @@ Each release is a git tag, `v0.1.0` and on. `INSTALL.md` installs the
 newest, and an update compares the project's files with the kit at the tag
 it has, which is how a hand edit is told from the kit's own.
 
-| Tag      | What changed                                                                                                                                                              |
-| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `v0.1.0` | The first: the rules, eleven checks, five skills, installed by an agent alone.                                                                                            |
-| `v0.2.0` | Formatting, lint, structure and verification as checks of their own; the quick check points at them.                                                                      |
-| `v0.3.0` | How a change lands: the remote's protection picks push or PR, merge style and grants asked at install, the land skill, the commit-msg hook.                               |
-| `v0.4.0` | Dependencies: a rule that one is taken in on purpose, and a check for exact installs, advisories, licences, unused packages and updates.                                  |
-| `v0.5.0` | Security: secrets kept out of the tree, code scanning, CI held to least access and pinned actions, and a served page's headers.                                           |
-| `v0.6.0` | Nothing left behind: the tidy skill finds what work left anywhere, says what each is, and settles it on the user's word.                                                  |
-| `v0.7.0` | Mutation: the hand check's line says what was changed, and a mutation tool's survivors are a gate, counted per file and held exactly.                                     |
-| `v0.8.0` | Local only: CI comes out. Every check holds in the hook, the full check or a fresh clone before a release; nothing needs a runner, a bot or a host's own scanning.        |
-| `v0.9.0` | Where work stands: plans kept in the project with a state line, a script that prints each open plan's next step and what git holds, and the next skill that reads it out. |
+| Tag       | What changed                                                                                                                                                                                        |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `v0.1.0`  | The first: the rules, eleven checks, five skills, installed by an agent alone.                                                                                                                      |
+| `v0.2.0`  | Formatting, lint, structure and verification as checks of their own; the quick check points at them.                                                                                                |
+| `v0.3.0`  | How a change lands: the remote's protection picks push or PR, merge style and grants asked at install, the land skill, the commit-msg hook.                                                         |
+| `v0.4.0`  | Dependencies: a rule that one is taken in on purpose, and a check for exact installs, advisories, licences, unused packages and updates.                                                            |
+| `v0.5.0`  | Security: secrets kept out of the tree, code scanning, CI held to least access and pinned actions, and a served page's headers.                                                                     |
+| `v0.6.0`  | Nothing left behind: the tidy skill finds what work left anywhere, says what each is, and settles it on the user's word.                                                                            |
+| `v0.7.0`  | Mutation: the hand check's line says what was changed, and a mutation tool's survivors are a gate, counted per file and held exactly.                                                               |
+| `v0.8.0`  | Local only: CI comes out. Every check holds in the hook, the full check or a fresh clone before a release; nothing needs a runner, a bot or a host's own scanning.                                  |
+| `v0.9.0`  | Where work stands: plans kept in the project with a state line, a script that prints each open plan's next step and what git holds, and the next skill that reads it out.                           |
+| `v0.10.0` | Bounded mutation: the tool's run is sized from the dry run against a budget in the project file, tests under mutation are made quick, a slow file is left out by name, and a Timeout is not a kill. |
 
 ## Left out on purpose
 
